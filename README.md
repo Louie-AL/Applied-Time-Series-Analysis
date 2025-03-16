@@ -46,19 +46,19 @@ Each homework folder contains:
 - **Comparing different forecasting methods** (e.g., ARIMA vs. Exponential Smoothing)
 - **Understanding uncertainty in time series predictions**
 
-### **Homework 6: Monte Carlo Simulations** *(Likely topics, based on file contents)*
+### **Homework 6: Monte Carlo Simulations**
 - **Generating synthetic time series data**
 - **Using Monte Carlo simulations for risk assessment**
 - **Bootstrap methods for time series forecasting**
 - **Financial applications: portfolio return simulations**
 
-### **Homework 7: Volatility & GARCH Models** *(Likely topics, based on file contents)*
+### **Homework 7: Volatility & GARCH Models**
 - **Modeling volatility using ARCH/GARCH models**
 - **Estimating time-varying variance in financial time series**
 - **Fitting models to stock price and commodity data**
 - **Comparing historical and implied volatility**
 
-### **Homework 8: Multivariate Time Series Analysis** *(No files found, inferred topic)*
+### **Homework 8: Multivariate Time Series Analysis**
 - **Multivariate Time Series (VAR models)**
 - **Cointegration Analysis**
 - **Machine Learning for Time Series Prediction**
