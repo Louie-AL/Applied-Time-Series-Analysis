@@ -1,0 +1,5 @@
+"0","upp  <- ts(y[(num+1):(num+n.ahead)]+2*rmspe, start=1981, freq=4)"
+"0","low  <- ts(y[(num+1):(num+n.ahead)]-2*rmspe, start=1981, freq=4)"
+"0"," xx  <- c(time(low), rev(time(upp)))"
+"0"," yy  <- c(low, rev(upp))"
+"0","polygon(xx, yy, border=8, col=gray(.5, alpha = .3))"

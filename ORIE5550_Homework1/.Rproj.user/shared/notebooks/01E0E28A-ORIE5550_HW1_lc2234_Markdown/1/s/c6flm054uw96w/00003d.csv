@@ -1,0 +1,5 @@
+"0",""
+"0",""
+"0","plot.ts(time_series_data2, ylab='Price', xlab='Date',"
+"0","        main = ""Apple stock price, Jan. 2019 - Dec. 2023"", "
+"0","        sub = ""Source: Yahoo! Finance"")"

@@ -1,0 +1,10 @@
+"0","# prob of state 2"
+"0","tsplot(ts(posterior(fm)[,3], start=1900), ylab = expression(hat(pi)[~2]*'(t|n)'));  abline(h=.5, lty=2)"
+"2","Warning: Argument 'type' not specified and will default to 'viterbi'. This default may change in future releases of depmixS4. Please see ?posterior for alternative options."
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework7/ORIE5550_Homeowork7/.Rproj.user/shared/notebooks/80CFCCFE-ORIE5550_Homework7_Markdown/1/89031309ff1922f/c6a0qzgm80rhe_t/ef9627da60554690979d47e3b4630bd3.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

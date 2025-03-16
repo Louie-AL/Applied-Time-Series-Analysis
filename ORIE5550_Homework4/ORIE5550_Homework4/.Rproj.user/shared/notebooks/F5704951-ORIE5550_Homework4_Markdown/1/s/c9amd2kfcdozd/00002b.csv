@@ -1,0 +1,7 @@
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework4/ORIE5550_Homework4/.Rproj.user/shared/notebooks/F5704951-ORIE5550_Homework4_Markdown/1/8903130917246bb5/c9amd2kfcdozd_t/9a9623d505ae47f88a01d743bd19cabd.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

@@ -1,0 +1,4 @@
+"0",""
+"0","unemp_data <- ts(unemp, start = c(1948, 1), end = c(1978, 12) , frequency = 12)"
+"0","plot(unemp_data, type=""l"", main=""Box-Cox Log-Transform of the GNP data"","
+"0","ylab = ""log(gnp)"", xlab = ""Year"")"

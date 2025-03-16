@@ -1,0 +1,6 @@
+"0",""
+"0","set.seed(123)"
+"0",""
+"0","ts.e1 <- arima.sim(model=list(ar=0.7, ma=0.5, order=c(1,1,1)), n=200, sd = sqrt(2))"
+"0","ts.e1 <- as.numeric(ts.e1)"
+"0","plot.ts(ts.e1)"

@@ -1,0 +1,5 @@
+"0",""
+"0","par(mfrow=c(2,1))"
+"0","plot.ts(time_series_data1, ylab='Percentage(%)', xlab='Year', "
+"0","        main = ""Percentage females with complete primary education (World), 1970 - 2020"","
+"0","        sub = ""Source: World Bank"")"

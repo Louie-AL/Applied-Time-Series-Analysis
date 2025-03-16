@@ -1,0 +1,6 @@
+"0",""
+"0","tt <- length(aggregate[,2])"
+"0",""
+"0","par(mfrow=c(2,2))"
+"0","plot(y=aggregate[2:tt,2], x=aggregate[1:(tt-1),2], ylab = 'Current call volume',"
+"0","     xlab = 'Yesterdays call volume', main = ""Scatterplot t and t-1"")"

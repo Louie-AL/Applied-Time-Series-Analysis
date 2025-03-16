@@ -1,0 +1,8 @@
+"0","plot(ma_pacf, type='h', main = ""PACF"")"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework5/ORIE5550_Homework5/.Rproj.user/shared/notebooks/747E0B84-ORIE5550_Homework5_Markdown/1/8903130956e3b23f/c73hepozwvnmd_t/28f6e6e64fc74858820c26892f5038be.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

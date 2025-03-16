@@ -1,0 +1,296 @@
+---
+title: "ORIE5550_HW6_Markdown"
+author: "Luis Alonso Cendra Villalobos (lc2234)"
+date: "2024-03-18"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+```{r}
+#install.packages("tidyverse")
+
+library(astsa)
+library(perARMA)
+library(forecast)
+library(urca)
+library(xts)
+library(fGarch)
+library(tseries)
+library(FinTS)
+library(tidyverse)
+library(forecast)
+```
+
+# Problem 3
+
+Consider weekly West Texas Intermediate (WTI) crude oil spot price oil in the R package astsa. Do the following.
+
+### (a) Compute log return of the price; Produce a time plot and sample ACF and PACF of the squared log return; Fit ARMA(p′,q′) and use the residual to perform the ARCH effect test and normality test;
+
+```{r q3a}
+
+oilTS <- diff(log(oil))[-1] 
+
+par(mfrow=c(1,3))
+plot.ts(oilTS, main="Oil Returns")
+acf(oilTS^2,lag.max=30)
+pacf(oilTS^2,lag.max=30)
+
+fit1 <- auto.arima(oilTS,max.p=5,max.q=5,
+                    allowdrift=TRUE,allowmean=TRUE,ic="aic")
+fit1
+summary(fit1)
+
+res.fit1 <- fit1$residuals
+
+par(mfrow=c(1,1))
+qqnorm(res.fit1)
+qqline(res.fit1)
+
+
+par(mfrow=c(1,3))
+plot.ts(res.fit1)
+acf(res.fit1^2,lag.max=20)
+pacf(res.fit1^2,lag.max=20)
+
+#  Use Ljung–Box test for r_t^2
+Box.test(res.fit1^2,lag=20,type="Ljung-Box")
+# ARCH effect on residuals
+ArchTest(res.fit1,lag=20)
+
+
+```
+
+From the ARCH-effect and Box-Ljung tests, we can reject the null hypothesis of no ARCH effect, thus the series does present an autocorrelation structure in its residuals up to lag 20, this can also be seen from the ACF and PACF. Thus, normality is also rejected.
+
+### (b) Fit ARCH(p) models with p = 1,...,4 for the residual; Choose the best model from aic or bic;
+
+```{r q3b}
+
+arch1 <- garchFit(~garch(1,0),data=oilTS,include.mean=FALSE,trace=FALSE)
+arch1@formula
+arch1@fit$ics
+arch1@fit$llh
+
+arch2 <- garchFit(~garch(2,0),data=oilTS,include.mean=FALSE,trace=FALSE)
+arch2@formula
+arch2@fit$ics
+arch2@fit$llh
+
+arch3 <- garchFit(~garch(3,0),data=oilTS,include.mean=FALSE,trace=FALSE)
+arch3@formula
+arch3@fit$ics
+arch3@fit$llh
+
+arch4 <- garchFit(~garch(4,0),data=oilTS,include.mean=FALSE,trace=FALSE)
+arch4@formula
+arch4@fit$ics
+arch4@fit$llh
+
+```
+
+All models show have very similar information criteria, the largest log-likelihood is $ARCH(1)$, but this model also has a relatively lower AIC and BIC criteria coefficients.
+Guiding ourselves with the AIC and BIC criteria, we choose the models $ARCH(2)$ and $ARCH(3)$, with the former having a slightly larger log-likelihood. Thus, we choose the model  $ARCH(2)$. We can further support this decision in terms of model parsimony.
+
+### (c) Find the best GARCH(p,q) model among (p,q) = (1,1),(1,2),(2,1),(2,2), chosen by using aic or bic; Compare with the ARCH(p) model chosen in (b) to determine the final model in terms of the aic or bic; Conclude whether GARCH(p,q) seems the better;
+
+```{r q3c}
+
+garch1 <- garchFit(~garch(1,1),data=oilTS,include.mean=FALSE,trace=FALSE)
+garch1@formula
+garch1@fit$ics
+garch1@fit$llh
+
+garch2 <- garchFit(~garch(1,2),data=oilTS,include.mean=FALSE,trace=FALSE)
+garch2@formula
+garch2@fit$ics
+garch2@fit$llh
+
+garch3 <- garchFit(~garch(2,1),data=oilTS,include.mean=FALSE,trace=FALSE)
+garch3@formula
+garch3@fit$ics
+garch3@fit$llh
+
+garch4 <- garchFit(~garch(2,2),data=oilTS,include.mean=FALSE,trace=FALSE)
+garch4@formula
+garch4@fit$ics
+garch4@fit$llh
+
+```
+Again, all models show have very similar information criteria and log-likelihood. With these minimal differences at hand, the criteria slightly favour the model $Garch(1,1)$. And, as before, model parsimony supports this decision.
+
+Comparing both conditional variance models, we choose $GARCH(1,1)$ based on AIC and BIC.
+
+### (d) Refit the data to the ARMA(p′,q′)-GARCH(p,q) model for the log return; Perform the model diagnostic;
+
+```{r q3d}
+
+fit2 <- garchFit(~arma(1,1)+garch(1,1),data=oilTS,include.mean=FALSE,trace=FALSE)
+summary(fit2)
+
+
+res.fit2 <- fit2@residuals
+
+par(mfrow=c(1,1))
+qqnorm(res.fit2)
+qqline(res.fit2)
+
+
+par(mfrow=c(1,3))
+plot.ts(res.fit2)
+acf(res.fit2^2,lag.max=20)
+pacf(res.fit2^2,lag.max=20)
+
+#  Use Ljung–Box test for r_t^2
+Box.test(res.fit2^2,lag=20,type="Ljung-Box")
+# ARCH effect on residuals
+ArchTest(res.fit2,lag=20)
+
+
+```
+
+###  (e) By using p′,q′,p,q decided above, fit ARMA(p′,q′)-apARCH(p,q) model for the log return; Write down the exact model that was fit to the series; Conclude whether asymmetry with respect to negative and positive disturbances should be considered.
+
+```{r q3e}
+
+ap.fit <- garchFit(~arma(1,1)+aparch(1,1), data=oilTS,cond.dist='std',trace=FALSE)
+summary(ap.fit)
+
+```
+
+```{r q3e_part2}
+
+mu <- ap.fit@fit$coef[1]
+ar1 <- ap.fit@fit$coef[2]
+ma1 <- ap.fit@fit$coef[3]
+omega <- ap.fit@fit$coef[4]
+alpha1 <- ap.fit@fit$coef[5]
+gamma1 <- ap.fit@fit$coef[6]
+beta1 <- ap.fit@fit$coef[7]
+delta <- ap.fit@fit$coef[8]
+shape <-ap.fit@fit$coef[9]
+
+```
+
+
+The exact model is:
+
+\begin{center}
+$X_t - `r round(mu,3)` = `r round(ar1,3)` (X_{t-1} - `r round(mu,3)`) + h_t + `r round(ma1,3)`h_{t-1}$ where $\{h_t: t \in \mathbb{Z}\} \sim GARCH(1, 1)$
+
+$h_t^{`r round(delta,3)`/2} = `r round(omega,3)` + `r round(alpha1,3)`(|r_{t-1}| - `r round(gamma1,3)` r_{t-1})^{`r round(delta,3)`} + `r round(beta1,3)` h_{t-1}^{`r round(delta,3)`/2}$
+
+$r_t = \sqrt{h_t} e_t$ where $\{e_t\}\stackrel{i.i.d.}{\sim}\mathcal{N}(0, 1)$
+
+\end{center}
+
+Given that the leverage parameter $\gamma_1 > 0$ then, past negative shocks have a deeper impact on current conditional variance than past positive shocks.
+
+# Problem 4
+
+Consider annual numbers of lynx trappings for 1821–1934 in Canada lynx in the R package forecast. Do the following.
+
+### (a) Produce and include a time plot of the series; Hold out the last 14 observations for test data; For the remaining data, use set.seed(123) and fit the NNAR(p,k) model through nnetar (set P = 0);
+
+```{r q4a}
+
+set.seed(123)
+
+plot(lynx,type="l")
+
+# Leave out the last 14 observations as test data
+training_data <- head(lynx,-14)
+test_data <- tail(lynx, 14)
+
+fit_lynx_a <- nnetar(training_data, P = 0) #Number of seasonal lags used as inputs
+fit_lynx_a
+# RMSE for whole data should be better
+```
+
+###  (b) Compute the root mean square forecasting error for the one-step ahead using time series cross-validation for NNAR(p,k), p = 1,...,5, models (set P = 0); Conclude which of these models (i.e., which p) has the smallest error;
+
+```{r q4b}
+
+set.seed(123)
+
+#' param p Embedding dimension for non-seasonal time series. Number of ' non-seasonal lags used as inputs. For non-seasonal time series, the default ' is the optimal number of lags (according to the AIC) for a linear AR(p) ' model. For seasonal time series, the same method is used but applied to ' seasonally adjusted data (from an stl decomposition). If set to zero to ' indicate that no non-seasonal lags should be included, then P must be at ' least 1 and a model with only seasonal lags will be fit.
+
+for (i in c(1:5)){
+  cat('Model: p = ', i, "\n")
+  fcast_lynx <- function(x, h){forecast(nnetar(training_data, p = i, P = 0),h=1)}
+  e1 <- tsCV(training_data, fcast_lynx, h=1)
+  cat("RMSE: ", sqrt(mean(e1^2, na.rm=TRUE)), "\n") #
+}
+
+fit_lynx_b <- nnetar(training_data, p = 3, P = 0) # cross-validation tscv function three inputs time series, function fcast_lynx
+fit_lynx_b
+
+```
+
+The smallest RMSE for the one-step forecasts is achieved by setting $p = 3$ as the optimal number of seasonal lags used as inputs, resulting in a model $NNAR(3,2)$.
+
+###  (c) Compare the squared root of the mean squared error for the model from (a) and the model chosen from (b); Conclude which one has a larger estimation error; Draw the time series plot of lynx and overlap the two fitted lines with different colors;
+
+```{r q4c}
+
+set.seed(123)
+
+# training data vs fitted
+sqrt(mean((training_data - fit_lynx_a$fitted)^2, na.rm=TRUE)) # model a
+sqrt(mean((training_data - fit_lynx_b$fitted)^2, na.rm=TRUE)) # model b
+
+
+library(tidyr)
+df1 <-data.frame(original_series = training_data, timestamp= seq(1,100,1))
+df2 <-data.frame(model_a = fit_lynx_a$fitted, timestamp= seq(1,100,1))
+df3 <-data.frame(model_b = fit_lynx_b$fitted, timestamp= seq(1,100,1))
+
+merged_df <-merge(df1,df2, by= "timestamp", all=TRUE)
+merged_df <-merge(merged_df,df3, by= "timestamp",all= TRUE)
+
+ggplot(merged_df, aes(x= timestamp)) +
+  geom_line(aes(y= original_series, color= "OriginalSeries")) +
+  geom_line(aes(y= model_a, color= "Model a - NNAR(8,4)")) +
+  geom_line(aes(y= model_b, color= "Model b - NNAR(3,2)"))+
+  labs(x= "Timestamp", y= "Value",color= "DataType")+
+  ggtitle("Original,Fitted and ForecastedTS") +
+  theme_minimal()
+
+```
+
+The RMSE for the one-step forecasts are lower for the model chosen in (a), which is an $NNAR(8,4)$.
+
+###  (d) For the test data, compare the square root of the mean forecasting error from (a) and the model chosen from (b); Conclude which one has a larger forecasting error; Draw the time series plot of lynx and overlap the two forecasts with different colors;
+
+```{r q4d}
+
+set.seed(123)
+
+
+model_a <- forecast(fit_lynx_a,h=14,PI=FALSE)
+model_b <- forecast(fit_lynx_b,h=14,PI=FALSE)
+
+# Test data vs forecasted 
+sqrt(mean((test_data - model_a$mean)^2, na.rm=TRUE)) # model a
+sqrt(mean((test_data - model_b$mean)^2, na.rm=TRUE)) # model b
+
+library(tidyr)
+df1 <-data.frame(original_series = test_data, timestamp= seq(1,14,1))
+df2 <-data.frame(model_a = model_a$mean, timestamp= seq(1,14,1))
+df3 <-data.frame(model_b = model_b$mean, timestamp= seq(1,14,1))
+
+merged_df <-merge(df1,df2, by= "timestamp", all=TRUE)
+merged_df <-merge(merged_df,df3, by= "timestamp",all= TRUE)
+
+ggplot(merged_df, aes(x= timestamp)) +
+  geom_line(aes(y= original_series, color= "Test Data")) +
+  geom_line(aes(y= model_a, color= "Forecast with Model a - NNAR(8,4)")) +
+  geom_line(aes(y= model_b, color= "Forecast with Model b - NNAR(3,2)"))+
+  labs(x= "Timestamp", y= "Value",color= "DataType")+
+  ggtitle("Original,Fitted and ForecastedTS") +
+  theme_minimal()
+
+
+```

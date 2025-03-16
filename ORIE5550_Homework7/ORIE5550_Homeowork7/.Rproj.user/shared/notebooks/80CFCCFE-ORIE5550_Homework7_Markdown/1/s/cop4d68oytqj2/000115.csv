@@ -1,0 +1,8 @@
+"0","plot.ts(log(data_air))"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework7/ORIE5550_Homeowork7/.Rproj.user/shared/notebooks/80CFCCFE-ORIE5550_Homework7_Markdown/1/89031309ff1922f/cop4d68oytqj2_t/803a2e175d5f4632b2ce19de089ef6fa.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

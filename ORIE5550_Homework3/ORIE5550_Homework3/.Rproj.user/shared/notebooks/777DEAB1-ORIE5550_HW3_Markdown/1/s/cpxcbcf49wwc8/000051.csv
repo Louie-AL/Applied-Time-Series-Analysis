@@ -1,0 +1,1 @@
+"0","pacf(arma.model$residuals, lag.max=20, ylim=c(-1, 1), main = ""Residuals Partial Autocorrelation function"")"

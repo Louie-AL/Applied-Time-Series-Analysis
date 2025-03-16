@@ -1,0 +1,3 @@
+"0","ts.plot(globtemp, globtempl, col=c(6,4), ylab='Temperature Deviations')"
+"2","Error: object 'globtemp' not found
+"

@@ -1,0 +1,9 @@
+"0",""
+"0","plot(out.par$phi[,2], type = 'b', col = 'blue', xlab = 'k', ylab = 'Value', main = expression(hat(phi[2,k]) * "" and "" * phi[2,k] * "" for k = 1,...,24""))"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework5/ORIE5550_Homework5/.Rproj.user/shared/notebooks/747E0B84-ORIE5550_Homework5_Markdown/1/8903130956e3b23f/cewzef4weaiq5_t/a5ed8678e01845a8b6ca96ded06e6604.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

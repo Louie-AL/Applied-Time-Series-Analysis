@@ -1,0 +1,294 @@
+---
+title: "ORIE5550_HW4_Markdown"
+author: "Luis Alonso Cendra Villalobos (lc2234)"
+date: "2024-02-28"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+#install.packages("astsa")
+library(astsa)
+library(forecast)
+library(urca)
+```
+
+# Question 2
+
+Consider the time series data gnp from the R package astsa.
+
+### (a) Take a suitable preliminary transformation of the series, and produce its time plot; In the following parts, work with the transformed series.
+ 
+```{r q2a}
+
+gnp_data <- ts(gnp, start = c(1947, 1), end = c(2002, 3) , frequency = 4)
+gnp_data = log(gnp_data)
+plot(gnp_data, type="l", main="Box-Cox Log-Transform of the GNP data",
+     ylab = "log(gnp)", xlab = "Year")
+
+```
+
+### (b) Leave out the last 5 observations. Denote these samples as test data. The remaining observations are your training data. Fit a quadratic trend to the series using regression with the training data; Produce a time plot and a correlogram of the residuals obtained after removing the trend from the series
+
+```{r q2b}
+
+# Leave out the last 5 observations as test data
+training_data <- head(gnp_data, -5)
+test_data <- tail(gnp_data, 5)
+
+tt <- seq(1, length(training_data), by=1)
+tt2 <- tt^2
+
+fitModel <- lm(training_data ~ tt + tt2)
+summary(fitModel)
+residuals <- fitModel$residuals
+
+par(mfrow = c(1, 2))
+plot(residuals, type="l", main="Residuals of the fitted model")
+acf(residuals, main="ACF of Residuals of the fitted model")
+
+```
+
+### (c) Fit an ARMA(p,q) model to the residual of the regression with an order p,q determined by an information criterion; Include the output; Produce the sample ACF and PACF of the residuals of the ARMA(p,q) model; Check the assumptions of white noise and normality for the residuals
+
+```{r q2c}
+
+auto.arima(residuals,max.p=10,max.q=10,ic="aic",allowmean = FALSE) # AIC
+auto.arima(residuals,max.p=10,max.q=10,ic="bic",allowmean = FALSE) # BIC
+
+arma.model <- arima(residuals, order=c(1,0,3), include.mean = FALSE, method = "ML")
+par(mfrow = c(1, 2))
+acf(arma.model$residuals, main="ACF of Residuals from the ARMA model")
+pacf(arma.model$residuals, lag.max=20, 
+     ylim=c(-1, 1), main = "PACF of Residuals from the ARMA model") # PACF
+
+# QQ plot
+qqnorm(arma.model$residuals, main = "QQ-plot of the regression residuals")
+qqline(arma.model$residuals, col = "red", lwd = 2)
+
+# Shapiro-Wilks test. Ho is normality
+shapiro.test(arma.model$residuals)
+
+#Box-Ljung test
+Box.test(arma.model$residuals, lag=20, type="Ljung-Box")
+
+```
+We favor the ARIMA(1,0,3) due to its higher log-likelihood and lower information criteria.
+
+From the Box-Ljung test, we cannot reject the no-autocorrelation among residuals up to lag 20, in accordance to the assumptions of white noise. The QQ-plot of the residuals exhibit heavy tails and we cannot reject the null hypothesis of normality for the Shapiro-Wilks test, thus, evidence suggests our residuals are not normally distributed; nevertheless, this is not a violation to white noise assumptions as there's no particular requirement that these are normally distributed.
+
+### (d) Forecast the transformed time series for 5 steps into the future; Compute the mean squared forecast error (MSFE) by using the test data; Provide the outputs.
+
+```{r q2d}
+
+arma.model <- arima(residuals, order=c(1,0,3), include.mean = FALSE, method = "ML")
+
+h = 5
+arma.forecast <- predict(arma.model, h)
+round(arma.forecast$pred, 3)
+round(arma.forecast$se, 3)
+
+forecasted_residuals <- matrix(0, nrow = 1, ncol = 5)
+forecasted_residuals[1,1] <- as.numeric(arma.forecast$pred)[1]
+forecasted_residuals[1,2] <- as.numeric(arma.forecast$pred)[2]
+forecasted_residuals[1,3] <- as.numeric(arma.forecast$pred)[3]
+forecasted_residuals[1,4] <- as.numeric(arma.forecast$pred)[4]
+forecasted_residuals[1,5] <- as.numeric(arma.forecast$pred)[5]
+
+estimated_coeffs <- matrix(0, nrow= 1, ncol = 3)
+estimated_coeffs[1,1] <- fitModel$coefficients[1]
+estimated_coeffs[1,2] <- fitModel$coefficients[2]
+estimated_coeffs[1,3] <- fitModel$coefficients[3]
+
+time_matrix <- matrix(0, nrow = 5, ncol = 3)
+time_matrix[, 1] <- 1
+time_matrix[, 2] <- 219:223
+time_matrix[, 3] <- time_matrix[, 2]^2
+time_matrix <-t(time_matrix)
+
+trend.forecast = estimated_coeffs %*% time_matrix
+ts.forecast.pred <- trend.forecast + forecasted_residuals
+ts.forecast.pred
+
+
+lower <- ts.forecast.pred - (qnorm(0.975) * forecasted_residuals) 
+upper <- ts.forecast.pred + (qnorm(0.975) * forecasted_residuals) 
+
+msfe <- mean( (ts.forecast.pred - as.numeric(test_data))^2 )
+msfe
+
+```
+
+### (e) Now, fit an ARIMA(p,d,q) model to the training data; Forecast the transformed time series for 5 steps into the future by using this model; Compute the MSFE again; Which model is preferred in terms of minimal MSFE? Include the output
+
+```{r q2e}
+
+auto.arima(training_data,max.p=10,max.q=10, max.d=2, ic="aic",allowmean = FALSE) # AIC
+auto.arima(training_data,max.p=10,max.q=10, max.d=2, ic="bic",allowmean = FALSE) # BIC
+
+arma.model.2e <- arima(training_data, order=c(1,1,0), include.mean = FALSE, method = "ML")
+
+h = 5
+arma.forecast.2e <- predict(arma.model.2e, h)
+round(arma.forecast.2e$pred, 3)
+
+msfe <- mean( (arma.forecast.2e$pred - as.numeric(test_data))^2 )
+msfe
+
+```
+
+We can see that the ARMA(p,q) model minimizes the MSFE better than ARMA(p,d,q), for a forecasting horizon of 5 periods. This can be an unexpected result, but we can re conciliate these results by recognizing the fact that the test data has a somewhat of a linear monotonically increasing trend: $\{ 9.12, 9.13, 9.14, 9.15, 9.16 \}$. This behavior is well captured by a trend model, as opposed to data with fluctuations which we believe the ARIMA model should be better at capturing. Additionally, the test data sample is small with only 5 observations, thus, making the measurement of the models performance challenging.
+
+# Question 3
+
+### (a) Use set.seed(99) to generate the following random walk with drift: $X_t = -0.2t + 0.8 \sum_{s=1}^{t}Z_s$ with $t=1,...,100$ where $Z_t$ is IID standard normal; Include a time plot of the series and sample ACF and PACF of the series.
+
+```{r q3a}
+
+set.seed(99)
+n_steps <- 100
+Z_t <- rnorm(n_steps)
+t <- seq_len(n_steps)
+X_t <- -1 * 0.2 * t + 0.8 * cumsum(Z_t)
+
+par(mfrow = c(2,2))
+plot(t, X_t, type = 'l', col = 'blue', xlab = 'Time', ylab = 'X_t',
+     main = 'Random Walk: X_t = -0.2*t + 0.8* sum(Z_t)')
+acf(X_t, main="ACF of Residuals from the ARMA model")
+pacf(X_t, lag.max=20, ylim=c(-1, 1), main = "PACF of Residuals from the ARMA model") # PACF
+
+```
+
+###  (b) Use the function auto.arima with suitable inputs to recover this model. That is, can you find an outcome of the model indicating the random walk with drift?
+
+```{r q3b}
+
+auto.arima(X_t,max.p=20,max.q=20, max.d=2, ic="aic", allowdrift=TRUE) # AIC
+auto.arima(X_t,max.p=20,max.q=20, max.d=2, ic="bic", allowdrift=TRUE) # BIC
+  
+  
+```
+Thus, suggesting that the series is integrated of order 1 or random walk with a drift parameter. Given that we know the true model of the data, we can compare the estimations with the true parameters; for instance, the drift parameter is $\approx -0.28$ close to the true value of $-0.2$ and the variance of the model is close to the true variance parameter of $(0.8)^{2} \approx 0.64$.
+
+### (c) Go through the testing procedure for unit roots with significance level $\alpha = 0.05$ (for all steps). Indicate the conclusion at each step of the procedure; Check if the testing result corresponds to the used model
+
+```{r q3c_trend}
+
+ur.gt <- ur.df(X_t, lags=0, type='trend')
+summary(ur.gt)
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a trend by testing if $\beta_2 = 0$ given $\pi = 0$ with the null $\phi_3: (\pi, \widetilde{\beta_1}, \widetilde{\beta_2}) = (0, \widetilde{\beta_1}, 0)$. Similarly, we cannot reject this null at a significance level of $5$%.
+Therefore, we take $\beta_2 = 0$ and proceed to fit another model without the trend term.
+
+```{r q3c_drift}
+
+ur.gt <- ur.df(X_t, lags=0, type='drift')
+summary(ur.gt)
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a drift by testing if $\beta_1 = 0$ given $\pi = 0$ with the null $\phi_1: (\pi, \widetilde{\beta_1}) = (0, 0)$. In this case, we reject this null at a significance level of $5$% and conclude that a drift exists. We proceed to test whether $\pi = 0$, excluding the $\beta$'s. By checking the t-statistic reported, we can state that $\pi$ is significantly different then zero at a $5$% confidence level, and conclude there is not a unit root.
+
+# Question 4
+
+Raotbl3, description: This dataset contains the time series used by Darryl Holden and Roger Perman in their article: “Unit Roots and Cointegration for the Economist"
+
+```{r q4a}
+data(Raotbl3)
+attach(Raotbl3)
+lc_TS <- ts(lc, start = c(1966, 4), end = c(1991, 2), frequency = 4)
+plot(lc_TS, type="l", main="Real consumption exp., U.K., 1966-Q4 to 1991-Q2.",
+     ylab = "Expenditure", xlab = "Quarter")
+
+```
+
+### (a) Consider the time series Raotbl3$lc of real consumption expenditure from the United Kingdom starting in 1966:4 until 1991:2 in the R package urca. Produce a time plot of the series; Go through the testing procedure for unit roots discussed in class taking $k = 3$ for the number of lagged series differences to include in the regression; Indicate the conclusion at each step of the procedure.
+
+```{r q4a_trend}
+ur.gt <- ur.df(lc_TS, lags=3, type='trend')
+summary(ur.gt)
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a trend by testing if $\beta_2 = 0$ given $\pi = 0$ with the null $\phi_3: (\pi, \widetilde{\beta_1}, \widetilde{\beta_2}) = (0, \widetilde{\beta_1}, 0)$. Similarly, we cannot reject this null at a significance level of $5$%.
+Therefore, we take $\beta_2 = 0$ and proceed to fit another model without the trend term.
+
+
+```{r q4a_drift}
+ur.gt <- ur.df(lc_TS, lags=3, type='drift')
+summary(ur.gt)
+
+```
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a drift by testing if $\beta_1 = 0$ given $\pi = 0$ with the null $\phi_1: (\pi, \widetilde{\beta_1}) = (0, 0)$. Similarly, we cannot reject this null at a significance level of $5$%. Therefore, we take $\beta_1 = 0$ and proceed to fit another model without trend nor drift terms.
+
+```{r q4a_none}
+ur.gt <- ur.df(lc_TS, lags=3, type='none')
+summary(ur.gt)
+
+```
+
+We can reject the null $\tau: \pi = 0$ at a significance level of $5$%.
+Therefore, we conclude there is no unit root. 
+
+### (b) Repeat the testing procedure with the series in (a) with a smaller lag, k = 2; Check if a different choice of lag affects the conclusion.
+
+```{r q4b_trend}
+
+ur.gt <- ur.df(lc_TS, lags=2, type='trend')
+summary(ur.gt)
+
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a trend by testing if $\beta_2 = 0$ given $\pi = 0$ with the null $\phi_3: (\pi, \widetilde{\beta_1}, \widetilde{\beta_2}) = (0, \widetilde{\beta_1}, 0)$. Similarly, we cannot reject this null at a significance level of $5$%.
+Therefore, we take $\beta_2 = 0$ and proceed to fit another model without the trend term.
+
+```{r q4b_drift}
+
+ur.gt <- ur.df(lc_TS, lags=2, type='drift')
+summary(ur.gt)
+
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a drift by testing if $\beta_1 = 0$ given $\pi = 0$ with the null $\phi_1: (\pi, \widetilde{\beta_1}) = (0, 0)$. We reject this null at a significance level of $5$% and conclude that a drift exists. We proceed to test whether $\pi = 0$, excluding the $\beta$'s. By checking the t-statistic reported, we cannot reject $\pi$ is significantly different from zero, and conclude $\pi = 0$ and there is a unit root.
+
+Therefore, there is a change in conclusions from a different lag choice.
+
+###  (c) Go through the testing procedure with the transformed gnp used in Problem 1. Here, use the entire samples. Use the lag p determined for the ARMA model. If your ARMA model contains the MA part, use selectlags, contained to ur.df function; Check if the conclusion of this problem corresponds to the preference of the model (i.e. trend stationary or non-stationary) in Problem 1. (e);
+
+```{r q4c}
+
+auto.arima(gnp_data,max.p=10,max.q=10,ic="aic",allowmean = FALSE) # AIC
+auto.arima(gnp_data,max.p=10,max.q=10,ic="bic",allowmean = FALSE) # BIC
+
+```
+For this result, we see that $p=1$ and according to the lectures material, we select $k=p-1=0$ for the ADF test.
+
+```{r q4c_trend}
+
+ur.gt <- ur.df(gnp_data, lags=0, type='trend')
+summary(ur.gt)
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a trend by testing if $\beta_2 = 0$ given $\pi = 0$ with the null $\phi_3: (\pi, \widetilde{\beta_1}, \widetilde{\beta_2}) = (0, \widetilde{\beta_1}, 0)$. Similarly, we cannot reject this null at a significance level of $5$%.
+Therefore, we take $\beta_2 = 0$ and proceed to fit another model without the trend term.
+
+```{r q4c_drift}
+
+ur.gt <- ur.df(gnp_data, lags=0, type='drift')
+summary(ur.gt)
+
+```
+
+We cannot reject the null $\tau: \pi = 0$ at a significance level of $5$%. Therefore, we proceed to the existence of a drift by testing if $\beta_1 = 0$ given $\pi = 0$ with the null $\phi_1: (\pi, \widetilde{\beta_1}) = (0, 0)$. We reject this null at a significance level of $5$% and conclude that a drift exists. We proceed to test whether $\pi = 0$, excluding the $\beta$'s. By checking the t-statistic reported, we cannot reject $\pi$ is significantly different from zero, and conclude $\pi = 0$ and there is a unit root. Same conclusion as in $4.b)$
+
+Our conclusion for problem $2.e$. is that gnp_data looks like an ARIMA(1,1,0) with a drift. Which means that the series is integrated or order(1), thus, not stationary.
+
+Our conclusion from $4.c$. is that the $\beta_{1} \ne 0$ and $pi = 0$, thus, there exists a unit root and there exists a drift. 
+
+So, we conclude that the models agree that the data is not stationary and has a drift.

@@ -1,0 +1,8 @@
+"0","TT <- 100"
+"0",""
+"0","set.seed(5)"
+"0","ts1 <- rgamma(TT,2,1)"
+"0","ts2 <- rgamma(TT,2,1)"
+"0",""
+"0","par(mfrow = c(1, 2))"
+"0","plot.ts(ts1,ylab = 'x_t',xlab='t')"

@@ -1,0 +1,2 @@
+"0","#lines(time_index, fitted_values, col=""red"")"
+"0","lines( forecast_combined, col=""green"")"

@@ -1,0 +1,7 @@
+"0",""
+"0","LR_statistic = 2 * log(-1*ML_sstd$value / -1 * ML$value)"
+"0","LR_statistic > qchisq(0.95, 1)"
+"1","[1]"
+"1"," TRUE"
+"1","
+"

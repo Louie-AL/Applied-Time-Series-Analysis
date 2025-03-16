@@ -1,0 +1,1 @@
+"0","lines(seq(0,20),ARMAacf(ma=c(0.7),lag.max=20),lty=""dashed"",col=""green"")"

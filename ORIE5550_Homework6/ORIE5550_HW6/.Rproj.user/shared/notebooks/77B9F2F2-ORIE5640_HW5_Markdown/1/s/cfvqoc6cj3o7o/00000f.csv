@@ -1,0 +1,5 @@
+"0",""
+"0","rm(list=ls())"
+"0","load(""hw5_GDP.RData"")"
+"0","par(mfrow=c(1,1))"
+"0","plot(date,gdp,type=""l"")"

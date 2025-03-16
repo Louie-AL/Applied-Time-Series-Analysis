@@ -1,0 +1,2 @@
+"0","ts <- read.table(""redwine.dat"")"
+"0","plot.ts(ts,ylab = 'x_t',xlab='t')"

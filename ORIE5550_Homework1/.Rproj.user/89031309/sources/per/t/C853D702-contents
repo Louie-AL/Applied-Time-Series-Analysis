@@ -1,0 +1,168 @@
+---
+title: "ORIE5254_VolForecastProject"
+author: "Luis Alonso Cendra Villalobos (lc2234)"
+date: "2024-10-28"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+# Stage 1: Volatility Forecasting Project
+
+This project employs a GARCH model to forecast significant spikes in market volatility, using the VIX index as a proxy, over a historical period from January 2, 1990, to October 25, 2024. The objective is to gain practical experience in volatility modeling within a framework reflective of real-world volatility trading desk tasks. By focusing on the GARCH model, this study captures the time-varying nature of market volatility, with specific attention to high-impact one-day volatility spikes.
+
+```{r setup, include=FALSE}
+
+library(fGarch)
+library(tseries)
+library(forecast)
+library(rugarch)
+
+```
+
+# Preliminary
+
+We will be using the VIX time series as a proxy for volatility in the market from 1/2/1990 to 10/25/2024. 
+The source of the data is Yahoo! Finance.
+
+```{r prelim}
+
+setwd("/Users/alons/OneDrive - Cornell University/Cornell University/Fall 2024/ORIE 5254")
+
+data1 <- read.csv("VIX.csv")
+data1$Date <- as.Date(data1$Date, format="%Y-%m-%d")
+
+data_train <- subset(data1, Date <= as.Date("2022-12-31"))
+
+```
+
+#Stage 1
+
+# 1.1 Autoregressive conditional heteroscedasticity (ARCH) model 
+
+The ARCH model provides a systematic framework for volatility modeling, where the basic idea is that the series $r_t$ is serially uncorrelated, but the conditional variance $h_t$ can be described by lagged values squared $r_t$. An ARCH model is suitable for modelling volatility given:
+  * First, volatility has clusters where adjacent observations are usually part of periods of low/high and these are modeled by including lagged independent variables.
+  * Second, financial time series often display periods of conditional heteroskedasticity, where variance changes over time based on past information. ARCH models allow the conditional variance to vary over time, unlike traditional time series models with constant variance assumptions.
+  * Third, leverage effect in financial markets, negative returns often lead to higher volatility than positive returns of the same magnitude. This is known as the leverage effect, which implies that volatility is asymmetric in relation to market returns. Although the basic ARCH model doesn't capture this effect directly, variations like GARCH (Generalized ARCH) and EGARCH (Exponential GARCH) can model asymmetries, as we will show further on.
+  * Fourth, financial time series distributions tend to have "fat tails" (higher probability of extreme values) and excess kurtosis, meaning the likelihood of large deviations from the mean is higher than that predicted by a normal distribution. ARCH models, by modeling the variance dynamically, can better capture these characteristics.
+
+The *ARCH model at lag $p$* (ARCH$(p)$) models the level as introducing an equation of the conditional variance,
+
+$$
+\begin{aligned}
+ r_t &= \sqrt{h_t}e_t, \quad \{e_t\}\stackrel{i.i.d.}{\sim}\mathcal{N}(0,1), \\
+ h_t &= \alpha_0 + \sum_{i=1}^p \alpha_i r_{t-i}^2,
+\end{aligned}
+$$
+
+where $\alpha_0 >0$ and $\alpha_i \geq 0$, $i=1,\ldots,p$. Where $r_t$ would represent the level of the VIX index.
+
+
+
+```{r 1.1}
+
+fit1 <- auto.arima(data_train$Adj.Close, max.p=5, max.q=5, allowdrift=TRUE, allowmean=TRUE, ic="aic")
+fit1
+
+forecast_horizon <- as.numeric(as.Date("2024-10-25") - as.Date("2022-12-31"))
+forecasted_values <- forecast(fit1, h=forecast_horizon)
+
+plot(forecasted_values)
+
+data_test <- subset(data1, Date > as.Date("2022-12-31") & Date <= as.Date("2024-10-25"))
+
+forecasted_values <- forecasted_values$mean[1:length(data_test$Adj.Close)]
+
+rmse <- sqrt(mean((forecasted_values - data_test$Adj.Close)^2))
+
+print(paste("RMSE:", rmse))
+
+max_actual <- max(data_test$Adj.Close, na.rm = TRUE)
+max_forecasted <- max(forecasted_values, na.rm = TRUE)
+
+print(paste("Max Actual:", max_actual))
+print(paste("Max Forecasted:", max_forecasted))
+
+```
+
+## 1.2 EGARCH (Exponential GARCH)
+
+*Exponential GARCH* (EGARCH) to model asymmetric effects between positive and negative values of $\{e_t\}$ by using weighted innovation.
+EGARCH are suitable because, first, they capture asymmetry (Leverage Effect), where negative returns increase future volatility more than positive returns of the same magnitude. Second, models asymmetric volatility dynamics effectively. Third, avoids non-negativity constraints on variance. Provides richer modeling for financial assets with leverage effects.
+
+$$
+g(e_t) = e_t + \lambda(|e_t| - \mathbb{E}|e_t|) 
+= \left\{\begin{array}{ll} 
+  (1+\lambda) e_t + \lambda E|e_t|, & \textrm{if }e_t \geq 0, \\
+  (1-\lambda) e_t + \lambda E|e_t|, & \textrm{if }e_t < 0.
+\end{array}\right.
+$$
+
+for symmetric distribution of $\{e_t\}$. 
+
+**Note:** For standard normal distribution, $\mathbb{E}(|e_t|) = \sqrt{2/\pi}$. For $t$-distribution with $\nu$, $\mathbb{E}(|e_t|) = \frac{2\sqrt{\nu-2}\Gamma[(\nu+1)/2]}{(\nu-1)\Gamma(\nu/2)\sqrt{\pi}}$.
+
+```{r 1.2}
+
+spec <- ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(4,1,2)), 
+                   mean.model = list(armaOrder = c(1, 1)))
+fit1 <- ugarchfit(spec = spec, data = data_train$Adj.Close)
+fit1
+
+
+```
+
+
+## 1.3 GJR-GARCH (Glosten-Jagannathan-Runkle GARCH)
+
+GJR-GARCH (Glosten-Jagannathan-Runkle GARCH) model is another popular extension of the GARCH model, designed to address the asymmetry often observed in financial time series data, particularly the leverage effect. Here’s how the GJR-GARCH model works and why it’s useful for modeling volatility:
+This variation is useful as, first, asymmetric response to shocks as GJR-GARCH is designed to capture the leverage effect, where negative shocks tend to increase volatility more than positive shocks of the same magnitude. The model incorporates an additional term that allows the conditional variance to respond differently depending on whether past returns were positive or negative. Second, conditional variance dynamics, builds on the traditional GARCH model by adding a term that introduces asymmetry into the variance equation. This enables the model to react more sharply to negative returns, making it particularly well-suited for assets that experience heightened risk following downturns, such as equities. 
+
+$$
+σ_t^2 = ω+αϵ_{t−1}^2+γϵ_{t−1}^2I_{t−1}+βσ_{t−1}^2
+$$
+
+where:
+
+𝜔is the constant term
+
+$𝛼𝜖_{𝑡−1}^2$ captures the standard GARCH effect,
+$𝛾𝜖_{𝑡−1}^2 I_{t-1}$ is the asymmetric term, where $I_{t-1}=1$ if $𝜖_{t-1}<0$ and $I_{t-1}= 0$ otherwise
+$𝛽𝜎_{𝑡−1}^2$ is the term representing volatility persistence.
+
+
+```{r 1.3}
+
+spec <- ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(4,1,2)), 
+                   mean.model = list(armaOrder = c(1, 1)))
+fit <- ugarchfit(spec = spec, data = data_train$Adj.Close)
+fit
+
+```
+
+## 1,4 APARCH (Asymmetric Power ARCH)
+
+*Asymmetric power ARCH at lag $p,q$* model (apARCH($p,q$)) by Ding et al. [-@ding1993long]. The return equation retains the same but the conditional variance equation is
+
+
+$$
+  h_t^{\delta/2} = \alpha_0 + \sum_{i=1}^p\alpha_{i}(|r_{t-i}| - \gamma_i r_{t-i})^{\delta} + \sum_{j=1}^q \beta_j h_{t-j}^{\delta/2},
+$$
+
+where $\alpha_0 > 0$, $\alpha_i \geq 0$, $i=1,\ldots,p$, $\beta_j \geq 0$, $j=1,\ldots,q$, with at least one $\alpha_i >0$ and $\beta_j \geq 0$. Also, $\delta > 0$ and the *leverage* parameters are $|\gamma_i| \leq 1$, $i=1,\ldots,p$.
+
+* $\delta=2$ and $\gamma_i=0$, $i=1,\ldots,p$ gives the GARCH model.
+
+* The parameters $\{\gamma_i\}$ are the leverage parameters, which are a measure of asymmetry. A positive (negative) value of $\gamma_i$'s means that past negative (positive) shocks have a deeper impact on current conditional variance than past positive (negative) shocks.
+
+```{r 1.4}
+
+spec <- ugarchspec(variance.model = list(model = "apARCH", garchOrder = c(4,1,2)), 
+                   mean.model = list(armaOrder = c(1, 1)))
+fit <- ugarchfit(spec = spec, data = data_train$Adj.Close)
+fit
+
+```
+
+

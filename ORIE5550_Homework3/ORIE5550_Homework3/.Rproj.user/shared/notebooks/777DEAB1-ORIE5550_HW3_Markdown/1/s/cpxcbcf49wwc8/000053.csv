@@ -1,0 +1,3 @@
+"0",""
+"0","# QQ plot"
+"0","qqnorm(arma.model$residuals, main = ""QQ-plot of the regression residuals"")"

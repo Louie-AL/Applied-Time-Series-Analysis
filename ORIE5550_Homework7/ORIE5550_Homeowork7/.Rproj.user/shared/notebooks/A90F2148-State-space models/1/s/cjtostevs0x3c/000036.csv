@@ -1,0 +1,4 @@
+"0","xvals <- seq(1,45)"
+"0","u1 <- pi1*dpois(xvals, lams[1])  "
+"0","u2 <- pi2*dpois(xvals, lams[2])"
+"0","lines(xvals, u1, col=4)   "

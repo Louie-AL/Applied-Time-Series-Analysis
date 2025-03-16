@@ -1,0 +1,4 @@
+"0","ts <- scan(""ut.dat"")"
+"2","Read 1700 items
+"
+"0","plot.ts(ts,ylab = 'x_t',xlab='t')"

@@ -1,0 +1,8 @@
+"0","plot(y=cadgasTS[3:tt], x=cadgasTS[1:(tt-2)], ylab = 'Current Production', xlab = '2 months ago production', main = ""Scatterplot t-1 and t-2"")"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework2/ORIE5550_Homework2/.Rproj.user/shared/notebooks/0A474A21-ORIE5550_Homework2_Markdown/1/8903130947d9a94a/cc94y3qc9ll22_t/d6aba33730aa402ab9149e9768e203a1.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

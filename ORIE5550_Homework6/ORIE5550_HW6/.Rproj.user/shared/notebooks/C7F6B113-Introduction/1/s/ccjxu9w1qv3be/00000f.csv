@@ -1,0 +1,4 @@
+"0","ts <- scan(""sunsptmo.dat"")"
+"2","Read 2820 items
+"
+"0","plot.ts(ts,ylab = 'x_t',xlab='t')"

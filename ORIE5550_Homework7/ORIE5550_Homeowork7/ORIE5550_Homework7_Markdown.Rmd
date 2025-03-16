@@ -1,0 +1,574 @@
+---
+title: "ORIE5550_HW7_Markdown"
+author: "Luis Alonso Cendra Villalobos (lc2234)"
+date: "2024-04-13"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+
+
+```{r}
+#install.packages("tidyverse")
+options(warn=-1) # turn off warnings
+library(astsa)
+library(perARMA)
+library(forecast)
+library(urca)
+library(xts)
+library(fGarch)
+library(tseries)
+library(FinTS)
+library(tidyverse)
+library(forecast)
+options(warn=0) # turn on warnings
+
+```
+
+# Problem 1
+
+### (a) Rewrite this model in a state-space form
+
+See handwritten notes.
+
+### (b) Use set.seed(123) to generate a time series of length 200 from ARIMA(1,1,1) with ϕ1 = 0.7, θ1 = 0.5, and σ2 Z = 2 through arima.sim; Produce a time plot of the series; Use Arima to estimate the model parameters ϕ1,θ1,σZ of the time series
+
+```{r q1b}
+
+set.seed(123)
+
+ts.e1 <- arima.sim(model=list(ar=0.7, ma=0.5, order=c(1,1,1)), n=200, sd = sqrt(2))
+ts.e1 <- as.numeric(ts.e1)
+plot.ts(ts.e1)
+
+arima.model <- Arima(ts.e1, 
+                      order=c(1,1,1),
+                      method = "ML",
+                      include.mean = TRUE)
+arima.model
+
+```
+
+### (c) Estimate the model parameters ϕ1,θ1,σZ from the generated time series data via estimation for the state-space model; Report estimates and their standard errors [Note: You can use the estimates in (a) as the initial guess of the parameters].
+
+```{r q1c}
+
+library(astsa)
+
+# Function to Calculate Likelihood 
+Linn <- function(para){
+
+
+ Phi <- diag(0,3) 
+ phi_1 <- para[1]
+ Theta_1 <- para[2]
+ Phi[1,1] <- 1
+ Phi[1,2] <- 1
+ Phi[1,3] <- Theta_1
+ Phi[2,1] <- 0
+ Phi[2,2] <- phi_1
+ Phi[2,3] <- 0
+ Phi[3,] <- c(0,1,0);
+
+ A <- cbind(1,1,Theta_1)
+
+ sigma_Z <- para[3] # sqrt sigma_Z^2
+ QQ <- diag(0,3)
+ QQ[1,] <- c(0,0,0)
+ QQ[2,1] <- 0
+ QQ[2,2] <- sigma_Z
+ QQ[2,3] <- 0
+ QQ[3,] <- c(0,0,0)
+ 
+ RR <- 0
+ 
+ kf <- Kfilter(ts.e1, A, mu0, Sigma0, Phi, QQ, RR,
+              Ups=NULL, Gam=NULL,input=NULL,S=NULL,version=1)
+ return(kf$like)
+
+}
+
+# Kfilter
+
+# Initial Parameters 
+mu0      <- c(ts.e1[1],0,0) 
+Sigma0   <- diag(1,3)  
+init.par <- c(0.58, 0.6044, sqrt(1.77))  # G[1,1], the 2 Rs and Q
+
+# Estimation
+est <- optim(init.par, Linn, NULL, method="BFGS", hessian=TRUE, control=list(trace=0,REPORT=1))
+SE  <- sqrt(diag(solve(est$hessian)))
+u   <- cbind(estimate=est$par,SE)
+rownames(u)=c("Phi1","Theta1","sigz2"); u     
+est
+
+```
+
+We have that $\phi_1 \approx 0.58$, $\theta_1 \approx 0.60$ and $\sigma_Z \approx 1.32$.
+
+### (d)  Smooth the state variables $X_t$; Overlap the time series of $Y_t = A X_t$, $Y_{t|t} = AX_{t|t}$, and $Y_{t|T} = AX_{t|T}$ with different colors in a single figure [Hint: You may encounter computationally singular in this example. This is caused by the inverse computation. If so, add an arbitrarily small enough number to the parameter that is indeed zero.]
+
+
+```{r q1d}
+
+# Ksmooth
+
+# Smoothing
+
+Phi <- diag(0,3) 
+Phi[1,1] <- 1
+Phi[1,2] <- 1
+Phi[1,3] <- est$par[2]
+Phi[2,1] <- 0
+Phi[2,2] <- est$par[1]
+Phi[2,3] <- 0
+Phi[3,] <- c(0,1,0);
+
+A <- cbind(1,1,est$par[2])
+
+QQ <- diag(0,3)
+QQ[1,] <- c(0,0,0)
+QQ[2,1] <- 0
+QQ[2,2] <- est$par[3]
+QQ[2,3] <- 0
+QQ[3,] <- c(0,0,0)
+
+RR <- 0.0000001
+
+ks <- Ksmooth(ts.e1, A, mu0, Sigma0, Phi, QQ, RR)   
+
+# Plots
+
+# Smoothers
+
+Tsm   <- ts(as.numeric(ks$Xs[1,,]))
+Ssm   <- ts(as.numeric(ks$Xs[2,,]))
+Rsm   <- ts(as.numeric(ks$Xs[3,,]))
+
+matrix_Smoothers <- matrix(nrow = 3, ncol = length(as.numeric(ks$Xs[1,,])))
+matrix_Smoothers[1,] <- as.numeric(ks$Xs[1,,])
+matrix_Smoothers[2,] <- as.numeric(ks$Xs[2,,])
+matrix_Smoothers[3,] <- as.numeric(ks$Xs[3,,])
+
+State_Smoothers   <- ts(as.numeric(A %*% matrix_Smoothers)) #Tsm + Ssm + Rsm
+
+# Filters
+
+Tsf   <- ts(as.numeric(ks$Xf[1,,]))
+Ssf   <- ts(as.numeric(ks$Xf[2,,]))
+Rsf   <- ts(as.numeric(ks$Xf[3,,]))
+
+matrix_Filters <- matrix(nrow = 3, ncol = length(as.numeric(ks$Xf[1,,])))
+matrix_Filters[1,] <- as.numeric(ks$Xf[1,,])
+matrix_Filters[2,] <- as.numeric(ks$Xf[2,,])
+matrix_Filters[3,] <- as.numeric(ks$Xf[3,,])
+
+State_Filters   <- ts(as.numeric(A %*% matrix_Filters)) #Tsf + Ssf + Rsf
+
+# Predictors
+
+matrix_Predictors <- matrix(nrow = 3, ncol = length(as.numeric(ks$Xp[1,,])))
+matrix_Predictors[1,] <- as.numeric(ks$Xp[1,,])
+matrix_Predictors[2,] <- as.numeric(ks$Xp[2,,])
+matrix_Predictors[3,] <- as.numeric(ks$Xp[3,,])
+
+State_Predictors <- ts(as.numeric(A %*% matrix_Predictors))
+
+
+p1    <- 3*sqrt(ks$Ps[1,1,]); p2 = 3*sqrt(ks$Ps[2,2,])
+
+# Forecast
+num <- length(ts.e1)
+n.ahead <- 12
+y       <- ts(append(ts.e1, rep(0,n.ahead)))
+rmspe   <- rep(0,n.ahead)
+x00     <- ks$Xf[,,num]
+P00     <- ks$Pf[,,num]
+Q       <- t(QQ) %*% QQ
+R       <- RR^2
+
+for (m in 1:n.ahead){
+       xp <- Phi%*%x00
+       Pp <- Phi%*%P00%*%t(Phi)+Q
+      sig <- A%*%Pp%*%t(A)+R
+        K <- Pp%*%t(A)%*%(1/sig)
+      x00 <- xp
+      P00 <- Pp-K%*%A%*%Pp
+ y[num+m] <- A%*%xp
+ rmspe[m] <- sqrt(sig)
+}
+
+# Single graph
+par(mfrow=c(1,1))
+tsplot(y, main='', ylab='ARIMA(1,1,1)', ylim=c(-50,50), xlim = c(0,215), col=2)
+upp  <- ts(y[(num+1):(num+n.ahead)]+2*rmspe, start=num, freq=1)
+low  <- ts(y[(num+1):(num+n.ahead)]-2*rmspe, start=num, freq=1)
+ xx  <- c(time(low), rev(time(upp)))
+ yy  <- c(low, rev(upp))
+polygon(xx, yy, border=8, col=gray(.5, alpha = .3))
+abline(v=num, lty=3)
+lines(State_Filters, ylim=c(-50,50),col=3)
+lines(State_Smoothers, ylim=c(-50,50),col=4)
+legend("topright",                           
+       c("State Predictors", "State Filters", "State Smoothers"),
+       lty = 1,
+       col = 2:4)
+
+
+# Several graphs
+par(mfrow=c(3,1))
+tsplot(y, main='', ylab='State Predictors', ylim=c(-50,50), xlim = c(0,215), col=2)
+upp  <- ts(y[(num+1):(num+n.ahead)]+2*rmspe, start=num, freq=1)
+low  <- ts(y[(num+1):(num+n.ahead)]-2*rmspe, start=num, freq=1)
+ xx  <- c(time(low), rev(time(upp)))
+ yy  <- c(low, rev(upp))
+polygon(xx, yy, border=8, col=gray(.5, alpha = .3))
+abline(v=num, lty=3)
+tsplot(State_Filters, ylab='State Filters', ylim=c(-50,50),col=3)
+tsplot(State_Smoothers, ylab='State Smoothers', ylim=c(-50,50),col=4)
+```
+
+# Problem 2
+
+Consider the monthly totals of international airline passengers from 1949 to 1960 AirPassengers in the R package astsa. Do the following.
+
+### (a) Rewrite this model in a state-space form 
+
+See handwritten notes.
+
+### (b) Similar to Problem 1, estimate the model parameters σV,σW,σZ, and σU; Report estimates and their standard errors.
+
+
+```{r q2b}
+
+data_air = AirPassengers
+par(mfrow = c(1, 2))
+plot.ts(data_air, main="original series")
+plot.ts(log(data_air), main="log series")
+
+A <- cbind(1,0,1,0,0,0,0,0,0,0,0,0,0)
+
+# Function to Calculate Likelihood
+Linn <- function(para){
+ Phi <- diag(0,13)
+ Phi[1,1] <- 1
+ Phi[1,2] <- 1
+ Phi[2,2] <- 1
+ Phi[3,] <- c(0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1); 
+ Phi[4,3] <- 1; 
+ Phi[5,4] <- 1;
+ Phi[6,5] <- 1;
+ Phi[7,6] <- 1;
+ Phi[8,7] <- 1;
+ Phi[9,8] <- 1;
+ Phi[10,9] <- 1;
+ Phi[11,10] <- 1;
+ Phi[12,11] <- 1;
+ Phi[13,12] <- 1;
+ 
+ Q1 <- para[2] #Wt
+ Q2 <- para[3] #Zt
+ Q3 <- para[4] #Ut
+ QQ <- diag(0,13)
+ QQ[1,1] <- Q1
+ QQ[2,2] <- Q2
+ QQ[3,3] <- Q3
+ 
+ RR <- para[1] #Vt
+ 
+ kf <- Kfilter(data_air, A, mu0, Sigma0, Phi, QQ, RR,
+              Ups=NULL, Gam=NULL,input=NULL,S=NULL,version=1)
+ return(kf$like)  
+}
+
+```
+
+
+```{r q2b_Kfilter}
+
+# Kfilter
+
+# Initial Parameters 
+mu0      <- c(rep(1.5, 13))
+Sigma0   <- diag(1.5, 13)
+init.par <- c(10,5,1,10)  # G[1,1], the 2 Rs and Q
+
+# Estimation
+options(warn=-1) # turn off warnings
+est <- optim(init.par, Linn, NULL, method="BFGS", hessian=TRUE, control=list(trace=0,REPORT=1))
+SE  <- sqrt(diag(solve(est$hessian)))
+options(warn=0) # turn on warnings
+u   <- cbind(estimate=est$par,SE)
+rownames(u)=c("SigmaV^2","SigmaW^2","SigmaZ^2","SigmaU^2"); u
+est
+
+```
+
+We have that $\sigma_V \approx sqrt(`r u[1]`)$, $\sigma_W \approx sqrt(`r u[2]`)$, $\sigma_Z \approx sqrt(`r u[3]`)$ and $\sigma_U \approx sqrt(`r u[4]`)$.
+
+### (c) Similar to Problem 1, smooth the state variables Xt; Draw three plots: The Kalman smoother estimators of (local level), the Kalman smoother estimators of (seasonal component), and the original data overlapped with the Kalman smoother estimators of (local level) & (seasonal component); Add confidence bands by 2× smoother mean square error each plot [Note: From (b), it may be not easy to find the initial estimates to make all estimates positive. In this case, use the absolute values of the estimates in (b)].
+
+```{r q2c_Ksmooth}
+
+# Ksmooth
+
+# Smooth
+A <- cbind(1,0,1,0,0,0,0,0,0,0,0,0,0)
+
+Phi <- diag(0,13)
+Phi[1,1] <- 1
+Phi[1,2] <- 1
+Phi[2,2] <- 1
+Phi[3,] <- c(0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1); 
+Phi[4,3] <- 1; 
+Phi[5,4] <- 1;
+Phi[6,5] <- 1;
+Phi[7,6] <- 1;
+Phi[8,7] <- 1;
+Phi[9,8] <- 1;
+Phi[10,9] <- 1;
+Phi[11,10] <- 1;
+Phi[12,11] <- 1;
+Phi[13,12] <- 1;
+
+Q1 <- est$par[2]
+Q2 <- est$par[3]
+Q3 <- est$par[4]   # sqrt q11 and q22
+QQ <- diag(0,13)
+QQ[1,1] <- Q1 #Wt
+QQ[2,2] <- Q2 #Zt
+QQ[3,3] <- Q3 #Ut
+
+RR <- est$par[1] # Vt
+
+ks <- Ksmooth(data_air, A, mu0, Sigma0, Phi, QQ, RR)   
+
+local_KS = ts(as.numeric(ks$Xs[1,,]), start = 1949)
+seasonal_KS = ts(as.numeric(ks$Xs[3,,]), start = 1949)
+
+local_seasonal_KS = local_KS + seasonal_KS
+
+# Plots
+Tsm   <- ts(as.numeric(ks$Xs[1,,]), start = 1949)
+Ssm   <- ts(as.numeric(ks$Xs[2,,]), start = 1949)
+
+p1    <- 2*sqrt(ks$Ps[1,1,]); p2 = 2*sqrt(ks$Ps[3,3,])
+
+par(mfrow=c(2,1))
+tsplot(local_KS, main='Local Level Kalman Smoothers', ylab='')
+xx  <- c(time(local_KS), rev(time(local_KS)))
+yy  <- c(local_KS-p1, rev(local_KS+p1))
+polygon(xx, yy, border=NA, col=gray(.5, alpha = .3))
+tsplot(seasonal_KS, main='Seasonal Kalman Smoothers', ylab='')
+xx  <- c(time(seasonal_KS), rev(time(seasonal_KS)))
+yy  <- c((seasonal_KS)-(p2), rev((seasonal_KS)+(p2)))
+polygon(xx, yy, border=NA, col=gray(.5, alpha = .3))
+
+par(mfrow=c(2,1))
+tsplot(data_air, main='Original data', ylab='', col=2)
+xx  <- c(time(data_air), rev(time(data_air)))
+yy  <- c(data_air-(p1+p2), rev(local_KS+(p1+p2)))
+polygon(xx, yy, border=NA, col=gray(.5, alpha = .3))
+tsplot(local_seasonal_KS,main='Local and Seasonal KS',col=3)
+xx  <- c(time(local_seasonal_KS), rev(time(local_seasonal_KS)))
+yy  <- c((local_seasonal_KS)-(p1+p2), rev((local_seasonal_KS)+(p1+p2)))
+polygon(xx, yy, border=NA, col=gray(.5, alpha = .3))
+
+
+# Forecast
+num <- length(data_air)
+n.ahead <- 12
+y       <- ts(append(data_air, rep(0,n.ahead)))
+rmspe   <- rep(0,n.ahead) 
+x00     <- ks$Xf[,,num]
+P00     <- ks$Pf[,,num]
+Q       <- t(QQ) %*% QQ
+R       <- RR^2
+
+for (m in 1:n.ahead){
+       xp <- Phi%*%x00
+       Pp <- Phi%*%P00%*%t(Phi)+Q
+      sig <- A%*%Pp%*%t(A)+R
+        K <- Pp%*%t(A)%*%(1/sig)
+      x00 <- xp 
+      P00 <- Pp-K%*%A%*%Pp
+ y[num+m] <- A%*%xp
+ rmspe[m] <- sqrt(sig) 
+}
+
+par(mfrow=c(1,1))
+tsplot(y, type='o', main='Kalman Predictors', ylab='AirPassengers')
+upp  <- ts(y[(num+1):(num+n.ahead)]+2*rmspe, start=num)
+low  <- ts(y[(num+1):(num+n.ahead)]-2*rmspe, start=num)
+ xx  <- c(time(low), rev(time(upp)))
+ yy  <- c(low, rev(upp))
+polygon(xx, yy, border=8, col=gray(.5, alpha = .3))
+abline(v=length(data_air), lty=3)
+
+
+```
+
+# Question 3
+
+### Now consider the data ar1miss in the R package astsa. This data set has 100 observations generated from the AR(1) model with ϕ1 = 0.9 and σ2 Z = 1, where 10% of the observations have been deleted at random (replaced with NA). Use the EM algorithm and then estimate the missing values; Plot the Kalman smoother estimators, the original data, and the confidence bands by 3× smoother mean square error in a single plot; Verify for the time points that the observations are missing, the Kalman smoother estimators and the smoother mean square error are identical to the theoretical result for t = m in (2) and (3).
+
+```{r q3}
+
+# Code prepared using the source: 
+# https://github.com/nickpoison/astsa/blob/master/fun_with_astsa/fun_with_astsa.md#8-state-space-models
+
+ar1miss
+
+plot(ar1miss, main="Original series") 
+
+y    <- ar1miss
+num  <- length(y)
+indicator <- array(1, dim=num)
+A    <- array(0, dim=c(1,1,num))  # creates numxnum zero matrices
+
+for(k in 1:num){
+  if (!(is.na(y[k]))){
+    A[1,1,k] = 1
+    indicator[k] = 0
+  }
+}
+
+# Initial values
+mu0    <- 0
+Sigma0 <- 1
+Phi    <- 0.9
+cQ     <- 0.01
+cR     <- 0.00000000001 #R needs to be zero
+
+for (i in 1:1000){
+  invisible(capture.output(em <- EM(y, A, mu0, Sigma0, Phi, cQ, cR, max.iter = 1, tol = 0.1)))
+  mu0    <- em$mu0
+  Sigma0 <- em$Sigma0
+  Phi    <- em$Phi
+  cQ     <- em$Q
+  cR     <- em$R
+  
+}
+
+# Graph smoother
+ks  <- Ksmooth(y, A, em$mu0, em$Sigma0, em$Phi, t(chol(em$Q)), t(chol(em$R)), NULL, NULL, NULL)
+
+ys <- ks$Xs[1,,] # Kalman Smoothers
+p1  <- 3*ks$Ps[1,1,] # smoother mean square error
+
+par(mfrow=c(1,1))
+tsplot(y, main='Original series, Kalman Smoothers and Bounds', col= 2, ylim=c(-6,8))
+xx  <- c(time(y), rev(time(y)))
+yy  <- c(y-p1, rev(y+p1))
+polygon(xx, yy, border=NA, col=gray(.5, alpha = .3))
+lines(ys, col = 3) 
+legend("topright",                           
+       c("Original data", "Kalman Smoother estimators"),
+       lty = 1,
+       col = 2:5)
+
+```
+
+```{r q3_KS}
+# comparisson Kalman smoother estimators
+
+for (i in 1:num){
+  if (indicator[i] == 1){
+    cat(i, ys[i], (0.9/(1+0.9^2)) * (ys[i-1]+ys[i+1]), "\n")
+  }
+}
+
+```
+
+We can see that for missing values, the Kalman Smoother estimators approximate their theoretical value.
+
+```{r q3_SMSE}
+
+# comparisson smoother mean square errors
+
+for (i in 1:num){
+  if (indicator[i] == 1){
+    cat(i, ks$Ps[1,1,i], (1^2/(1+0.9^2)), "\n")
+  }
+}
+
+```
+
+We can see that for missing values, the smoother mean square errors approximate their theoretical value.
+
+## Question 4
+
+Consider the dataset polio in the R package gamlss.data. Do the following:
+
+### (a) Draw a time plot of the data. Based on the plot, argue how many states of Xt seem to be required.
+
+I argue that there are $2$ states, eyeballing the means we set inital values of $1$ and $2$.
+
+```{r q4a}
+
+plot.ts(polio)
+
+```
+
+### (b) With proper starting values for the parameters of the response models, use set.seed(123) to fit a Poisson-HMM to the data; Compute stationary probabilities of the states; Check the overdispersion of the model numerically.
+
+```{r q4b}
+
+# packageurl <- "https://cran.r-project.org/src/contrib/depmixS4_1.5-0.tar.gz"
+
+# install.packages(packageurl)
+# install.packages('depmixS4')
+
+library(depmixS4)
+
+set.seed(123)
+
+model <- depmix(polio ~ 1, nstates = 2, data=data.frame(polio), family=poisson('identity'),respstart=c(1, 2))
+fm <- fit(model)
+fm
+summary(fm)
+standardError(fm)
+
+##-- A little nicer display of the parameters --##
+para.mle <- as.vector(getpars(fm))[3:8]
+mtrans <- matrix(para.mle[1:4], byrow=TRUE, nrow=2)
+lams   <- para.mle[5:6]
+pi1    <- mtrans[2,1]/(2 - mtrans[1,1] - mtrans[2,2]) 
+pi2    <- 1 - pi1
+
+mean_Yt <- pi1*lams[1]+pi2*lams[2]
+
+var_Yt <- mean_Yt+pi1*pi2*(lams[1]^2+lams[2]^2-2*lams[1]*lams[2])
+
+c(mean_Yt, var_Yt)
+
+
+```
+
+We have that the probability of the first state is $`r pi1`$ and the probability of the second state is $`r pi2`$. We can see that $Var(Y_t) \approx `r var_Yt` > E(Y_t) \approx `r mean_Yt`$, this phenomenon is called overdispersion.
+
+
+### (c) By referring to the counts of earthquakes example, draw three plots: A time plot of the data and estimated states, HMM smoothing probabilities of state 1, and a histogram of the data with the two estimated Poisson densities.
+
+```{r q4c}
+
+#-- Graphics --##
+par(mfrow=c(3,1))
+# data and states
+tsplot(polio, main="", ylab='polio', type='h', col=gray(.7), ylim=c(0,50))
+text(polio, col=6*posterior(fm)[,1]-2, labels=posterior(fm)[,1])
+# prob of state 2
+tsplot(ts(posterior(fm)[,2], start=1900), ylab = expression(hat(pi)[~2]*'(t|n)'));  abline(h=.5, lty=2)
+# histogram
+hist(polio, breaks=30, prob=TRUE, main="")
+xvals <- seq(1,45)
+u1 <- pi1*dpois(xvals, lams[1])  
+u2 <- pi2*dpois(xvals, lams[2])
+lines(xvals, u1, col=4)   
+lines(xvals, u2, col=2)
+
+```
+
+

@@ -1,0 +1,10 @@
+"0","acf(deathsDecomp$random, lag.max = 7, "
+"0","    ylim = c(-1,1), main = ""Correlogram for residuals"","
+"0","    na.action = na.pass)"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework2/ORIE5550_Homework2/.Rproj.user/shared/notebooks/0A474A21-ORIE5550_Homework2_Markdown/1/8903130947d9a94a/ccxic00foil34_t/59817fb1b65f4768a43fc3bbb36cc7b4.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

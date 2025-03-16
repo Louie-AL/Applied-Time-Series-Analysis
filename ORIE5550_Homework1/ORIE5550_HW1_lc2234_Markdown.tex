@@ -1,0 +1,834 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={ORIE5550 - HW1 - lc2234},
+  pdfauthor={Luis Alonso Cendra Villalobos (lc2234)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{ORIE5550 - HW1 - lc2234}
+\author{Luis Alonso Cendra Villalobos (lc2234)}
+\date{2024-02-01}
+
+\begin{document}
+\maketitle
+
+install.packages(``tinytex'')
+
+\hypertarget{problem-1}{%
+\section{Problem 1}\label{problem-1}}
+
+\hypertarget{find-2-univariate-time-series-in-different-fields-online-and-do-the-following-for-each-of-the-two-series}{%
+\subsection{Find 2 univariate time series in different fields online and
+do the following for each of the two
+series:}\label{find-2-univariate-time-series-in-different-fields-online-and-do-the-following-for-each-of-the-two-series}}
+
+\hypertarget{a-indicate-the-exact-source-for-the-time-series-data.}{%
+\subsubsection{(a) Indicate the exact source for the time series
+data.}\label{a-indicate-the-exact-source-for-the-time-series-data.}}
+
+Source of data1: World Bank. URL:
+\url{https://data.worldbank.org/indicator/SE.PRM.CMPT.FE.ZS?locations=1W\&start=1973\&view=chart}
+
+Source of data2: Yahoo! Finance. URL:
+\url{https://finance.yahoo.com/quote/AAPL/history?period1=1548720000\&period2=1706486400\&interval=1mo\&filter=history\&frequency=1mo\&includeAdjustedClose=true}
+
+\hypertarget{b-output-the-first-20-elements-x1x20-of-the-series-in-r.}{%
+\subsubsection{(b) Output the first 20 elements x1,\ldots,x20 of the
+series in
+R.}\label{b-output-the-first-20-elements-x1x20-of-the-series-in-r.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Set working directory}
+\FunctionTok{setwd}\NormalTok{(}\StringTok{"/Users/alons/OneDrive {-} Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550\_Homework1"}\NormalTok{)}
+\CommentTok{\#extract data from CSV}
+\NormalTok{data1 }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"ORIE5550\_DataHW1.csv"}\NormalTok{)}
+\NormalTok{data1}\SpecialCharTok{$}\NormalTok{Year }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(data1}\SpecialCharTok{$}\NormalTok{Year)}
+\NormalTok{data2 }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"ORIE5550\_Data2HW1.csv"}\NormalTok{)}
+\NormalTok{data2}\SpecialCharTok{$}\NormalTok{Date }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(data2}\SpecialCharTok{$}\NormalTok{Date)}
+
+
+\CommentTok{\#transform data to Time Series}
+\NormalTok{time\_series\_data1 }\OtherTok{\textless{}{-}} \FunctionTok{ts}\NormalTok{(data1}\SpecialCharTok{$}\NormalTok{Value, }\AttributeTok{start =} \FunctionTok{min}\NormalTok{(data1}\SpecialCharTok{$}\NormalTok{Year), }\AttributeTok{frequency =} \DecValTok{1}\NormalTok{)}
+\NormalTok{time\_series\_data2 }\OtherTok{\textless{}{-}} \FunctionTok{ts}\NormalTok{(data2}\SpecialCharTok{$}\NormalTok{Value, }\AttributeTok{start =} \FunctionTok{min}\NormalTok{(data2}\SpecialCharTok{$}\NormalTok{Date), }\AttributeTok{frequency =} \DecValTok{12}\NormalTok{)}
+
+\CommentTok{\# Output the first 20 values}
+\NormalTok{first\_20\_values1 }\OtherTok{\textless{}{-}} \FunctionTok{head}\NormalTok{(time\_series\_data1, }\DecValTok{20}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(first\_20\_values1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 70.67788 69.07636 68.12719 68.04817 71.75885 73.93382 73.02761 73.40257
+##  [9] 73.72074 73.15771 75.41759 75.92915 76.64542 76.75523 77.51466 77.79708
+## [17] 77.87164 77.33327 77.51179 76.97076
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{first\_20\_values2 }\OtherTok{\textless{}{-}} \FunctionTok{head}\NormalTok{(time\_series\_data2, }\DecValTok{20}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(first\_20\_values2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  41.54781  45.77450  48.35781  42.18869  47.87880  51.53647  50.49627
+##  [8]  54.38640  60.40613  64.89605  71.52080  75.38364  66.57903  62.08135
+## [15]  71.72715  77.62061  89.30191 104.04848 126.35438 113.60417
+\end{verbatim}
+
+\hypertarget{c-produce-a-time-plot-of-the-series-in-r-after-transforming-the-series-into-a-time-series-object.}{%
+\subsubsection{(c) Produce a time plot of the series in R, after
+transforming the series into a time series
+object.}\label{c-produce-a-time-plot-of-the-series-in-r-after-transforming-the-series-into-a-time-series-object.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(time\_series\_data1, }\AttributeTok{ylab=}\StringTok{\textquotesingle{}Percentage(\%)\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab=}\StringTok{\textquotesingle{}Year\textquotesingle{}}\NormalTok{, }
+        \AttributeTok{main =} \StringTok{"Percentage females with complete primary education (World), 1970 {-} 2020"}\NormalTok{,}
+        \AttributeTok{sub =} \StringTok{"Source: World Bank"}\NormalTok{)}
+
+
+\FunctionTok{plot.ts}\NormalTok{(time\_series\_data2, }\AttributeTok{ylab=}\StringTok{\textquotesingle{}Price\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab=}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{,}
+        \AttributeTok{main =} \StringTok{"Apple stock price, Jan. 2019 {-} Dec. 2023"}\NormalTok{, }
+        \AttributeTok{sub =} \StringTok{"Source: Yahoo! Finance"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{ORIE5550_HW1_lc2234_Markdown_files/figure-latex/unnamed-chunk-2-1} \end{center}
+
+\hypertarget{d-discuss-briefly-possible-objectives-for-analyzing-the-time-series.}{%
+\subsubsection{(d) Discuss briefly possible objectives for analyzing the
+time
+series.}\label{d-discuss-briefly-possible-objectives-for-analyzing-the-time-series.}}
+
+The percentage of females with complete primary education can be
+analyzed to study the factors that are involved in the literacy rate of
+women worldwide, we can regress the series against others like
+investment in education, inclusion of women to the education system,
+gender equality policies/decisions, among others. The Apple stock price
+can be examined to determine factors that can forecast the stock price
+in the future with the objective of making investment decisions, for
+example.
+
+\hypertarget{problem-2}{%
+\section{Problem 2}\label{problem-2}}
+
+\hypertarget{a-produce-two-different-realizations-xt-t-1t-of-the-model-of-length-t-100-include-the-r-code}{%
+\subsubsection{(a) Produce two different realizations xt, t =
+1,\ldots,T, of the model of length T = 100; Include the R
+code;}\label{a-produce-two-different-realizations-xt-t-1t-of-the-model-of-length-t-100-include-the-r-code}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set the length of the time series}
+\NormalTok{length\_of\_series }\OtherTok{\textless{}{-}} \DecValTok{100}
+
+\CommentTok{\# Initialize vectors to store the time series values}
+\NormalTok{X\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Y\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{X\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Y\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Z\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Z\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+
+
+\CommentTok{\# Set the initial value of Z}
+\NormalTok{Z\_1[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{)) }\CommentTok{\#realization 1 of Z[1]}
+\NormalTok{Z\_2[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{)) }\CommentTok{\#realization 2 of Z[1]}
+
+\CommentTok{\# Generate the time series realizations for Z\_t, X\_t, and X\_t * X\_(t{-}1)}
+\ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series) \{}
+\NormalTok{  Z\_1[t] }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{))}
+\NormalTok{  Z\_2[t] }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{))}
+  
+  \CommentTok{\# Realization 1 of X\_t and Y = X\_t * X\_(t{-}1)}
+\NormalTok{  X\_1[t] }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ Z\_1[t] }\SpecialCharTok{+}\NormalTok{ Z\_1[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{  Y\_1[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_1[t] }\SpecialCharTok{*}\NormalTok{ X\_1[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+  
+  \CommentTok{\# Realization 2 of X\_t and Y = X\_t * X\_(t{-}1)}
+\NormalTok{  X\_2[t] }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ Z\_2[t] }\SpecialCharTok{+}\NormalTok{ Z\_2[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{  Y\_2[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_2[t] }\SpecialCharTok{*}\NormalTok{ X\_2[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+  
+\NormalTok{\}}
+  
+\CommentTok{\# Calculate the mean of Z}
+\NormalTok{mean\_Z\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_1) }\CommentTok{\#mean of realization 1}
+\NormalTok{mean\_Z\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_2) }\CommentTok{\#mean of realization 2}
+
+\CommentTok{\# Calculate the mean of Z\^{}2}
+\NormalTok{mean\_Z\_1\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_1}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\CommentTok{\#mean of realization 1 squared}
+\NormalTok{mean\_Z\_2\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_2}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\CommentTok{\#mean of realization 2 squared}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1:"}\NormalTok{, mean\_Z\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1: 0.02"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1\^{}2:"}\NormalTok{, mean\_Z\_1\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1^2: 2.02"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1:"}\NormalTok{, mean\_Z\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1: -0.28"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1\^{}2:"}\NormalTok{, mean\_Z\_2\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1^2: 1.72"
+\end{verbatim}
+
+\hypertarget{b-compute-theoretically-ext-and-ex2-t-compare-these-quantities-with-the-two-realizations-above-include-the-r-code.}{%
+\subsubsection{(b) Compute theoretically EXt and E(X2 t); Compare these
+quantities with the two realizations above; Include the R
+code.}\label{b-compute-theoretically-ext-and-ex2-t-compare-these-quantities-with-the-two-realizations-above-include-the-r-code.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of X\_t}
+\NormalTok{mean\_X\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_1)}
+\NormalTok{mean\_X\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_2)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_1:"}\NormalTok{, mean\_X\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_1: 0.09"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_2:"}\NormalTok{, mean\_X\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_2: -0.81"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of X\_t squared}
+\NormalTok{mean\_X\_1\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_1}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{mean\_X\_2\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_2}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_1\^{}2:"}\NormalTok{, mean\_X\_1\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_1^2: 8.73"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_2\^{}2:"}\NormalTok{, mean\_X\_2\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_2^2: 8.55"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of Y = X\_t * X\_(t{-}1)}
+\NormalTok{mean\_Y\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y\_1)}
+\NormalTok{mean\_Y\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y\_2)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\StringTok{"Let Y = X\_t * X\_(t{-}1), then:"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Let Y = X_t * X_(t-1), then:"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Y\_1:"}\NormalTok{, mean\_Y\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Y_1: 2.16"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Y\_2:"}\NormalTok{, mean\_Y\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Y_2: 3.69"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlations}
+
+\NormalTok{V\_11 }\OtherTok{\textless{}{-}}\NormalTok{ X\_1[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series]}
+\NormalTok{V\_12 }\OtherTok{\textless{}{-}}\NormalTok{ X\_1[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(length\_of\_series }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)]}
+
+\NormalTok{V\_21 }\OtherTok{\textless{}{-}}\NormalTok{ X\_2[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series]}
+\NormalTok{V\_22 }\OtherTok{\textless{}{-}}\NormalTok{ X\_2[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(length\_of\_series }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)]}
+
+\CommentTok{\# Calculate the correlation between V\_1 and V\_2}
+\NormalTok{correlation\_V1\_V2\_1 }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(V\_11, V\_12)}
+\NormalTok{correlation\_V1\_V2\_2 }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(V\_21, V\_22)}
+
+\CommentTok{\# Display the correlation}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Correlation between V\_1 and V\_2 realization 1:"}\NormalTok{, correlation\_V1\_V2\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation between V_1 and V_2 realization 1: 0.247776593090737"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Correlation between V\_1 and V\_2 realization 2:"}\NormalTok{, correlation\_V1\_V2\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation between V_1 and V_2 realization 2: 0.387959304165155"
+\end{verbatim}
+
+\hypertarget{d-what-are-the-possible-values-of-xt-and-the-probabilities-that-xt-takes-these-values-compare-your-answers-from-the-two-realizations-above}{%
+\subsubsection{(d) What are the possible values of Xt and the
+probabilities that Xt takes these values? Compare your answers from the
+two realizations
+above}\label{d-what-are-the-possible-values-of-xt-and-the-probabilities-that-xt-takes-these-values-compare-your-answers-from-the-two-realizations-above}}
+
+See handwritten notes.
+
+\hypertarget{problem-3}{%
+\section{Problem 3}\label{problem-3}}
+
+\hypertarget{problem-3.-come-up-with-your-own-time-series-model-and-repeat-parts-a-c-of-problem-2-for-the-model.-your-model-should-have-at-least-a-trend-or-a-periodic-component-and-incorporate-iid-noise-in-some-way}{%
+\subsubsection{Problem 3. Come up with your own time series model and
+repeat parts (a)-(c) of Problem 2 for the model. Your model should have
+at least a trend or a periodic component, and incorporate IID noise in
+some
+way}\label{problem-3.-come-up-with-your-own-time-series-model-and-repeat-parts-a-c-of-problem-2-for-the-model.-your-model-should-have-at-least-a-trend-or-a-periodic-component-and-incorporate-iid-noise-in-some-way}}
+
+See Handwritten notes. We assume T=100, alpha = 2, variance = 2.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set the length of the time series}
+\NormalTok{length\_of\_series }\OtherTok{\textless{}{-}} \DecValTok{100}
+
+\CommentTok{\# Initialize vectors to store the time series values}
+\NormalTok{X\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Y\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{X\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Y\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Z\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+\NormalTok{Z\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(length\_of\_series)}
+
+
+\CommentTok{\# Create a time series Z\_t with elements distributed normally}
+\NormalTok{Z\_1 }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(length\_of\_series, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \FunctionTok{sqrt}\NormalTok{(}\DecValTok{2}\NormalTok{))}
+\NormalTok{Z\_2 }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(length\_of\_series, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \FunctionTok{sqrt}\NormalTok{(}\DecValTok{2}\NormalTok{))}
+
+\NormalTok{X\_1[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{+}\NormalTok{ Z\_1[}\DecValTok{1}\NormalTok{]}
+\NormalTok{X\_2[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{+}\NormalTok{ Z\_2[}\DecValTok{1}\NormalTok{]}
+
+\CommentTok{\# Generate the time series realizations for Z\_t, X\_t, and X\_t * X\_(t{-}1)}
+\ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series) \{}
+  
+  \CommentTok{\# Realization 1 of X\_t and Y = X\_t * X\_(t{-}1)}
+\NormalTok{  X\_1[t] }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ t }\SpecialCharTok{+}\NormalTok{ Z\_1[t]}
+\NormalTok{  Y\_1[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_1[t] }\SpecialCharTok{*}\NormalTok{ X\_1[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+  
+  \CommentTok{\# Realization 2 of X\_t and Y = X\_t * X\_(t{-}1)}
+\NormalTok{  X\_2[t] }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*}\NormalTok{ t }\SpecialCharTok{+}\NormalTok{ Z\_2[t]}
+\NormalTok{  Y\_2[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_2[t] }\SpecialCharTok{*}\NormalTok{ X\_2[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+  
+\NormalTok{\}}
+  
+\CommentTok{\# Calculate the mean of Z}
+\NormalTok{mean\_Z\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_1) }\CommentTok{\#mean of realization 1}
+\NormalTok{mean\_Z\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_2) }\CommentTok{\#mean of realization 2}
+
+\CommentTok{\# Calculate the mean of Z\^{}2}
+\NormalTok{mean\_Z\_1\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_1}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\CommentTok{\#mean of realization 1 squared}
+\NormalTok{mean\_Z\_2\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Z\_2}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\CommentTok{\#mean of realization 2 squared}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1:"}\NormalTok{, mean\_Z\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1: 0.0872531081324089"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1\^{}2:"}\NormalTok{, mean\_Z\_1\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1^2: 1.90780846047563"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1:"}\NormalTok{, mean\_Z\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1: 0.0975031026701417"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Z\_1\^{}2:"}\NormalTok{, mean\_Z\_2\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Z_1^2: 2.14682783358742"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of X\_t}
+\NormalTok{mean\_X\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_1)}
+\NormalTok{mean\_X\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_2)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_1:"}\NormalTok{, mean\_X\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_1: 101.087253108132"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_2:"}\NormalTok{, mean\_X\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_2: 101.09750310267"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of X\_t squared}
+\NormalTok{mean\_X\_1\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_1}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+\NormalTok{mean\_X\_2\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_2}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_1\^{}2:"}\NormalTok{, mean\_X\_1\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_1^2: 13567.9144086239"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of X\_2\^{}2:"}\NormalTok{, mean\_X\_2\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of X_2^2: 13543.4513730565"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of Y = X\_t * X\_(t{-}1)}
+\NormalTok{mean\_Y\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y\_1)}
+\NormalTok{mean\_Y\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y\_2)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\StringTok{"Let Y = X\_t * X\_(t{-}1), then:"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Let Y = X_t * X_(t-1), then:"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Y\_1:"}\NormalTok{, mean\_Y\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Y_1: 13367.6267622716"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of Y\_2:"}\NormalTok{, mean\_Y\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of Y_2: 13340.2505018336"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlations}
+
+\NormalTok{V\_11 }\OtherTok{\textless{}{-}}\NormalTok{ X\_1[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series]}
+\NormalTok{V\_12 }\OtherTok{\textless{}{-}}\NormalTok{ X\_1[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(length\_of\_series }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)]}
+
+\NormalTok{V\_21 }\OtherTok{\textless{}{-}}\NormalTok{ X\_2[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series]}
+\NormalTok{V\_22 }\OtherTok{\textless{}{-}}\NormalTok{ X\_2[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(length\_of\_series }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)]}
+
+\CommentTok{\# Calculate the correlation between V\_1 and V\_2}
+\NormalTok{correlation\_V1\_V2\_1 }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(V\_11, V\_12)}
+\NormalTok{correlation\_V1\_V2\_2 }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(V\_21, V\_22)}
+
+\CommentTok{\# Display the correlation}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Correlation between V\_1 and V\_2 realization 1:"}\NormalTok{, correlation\_V1\_V2\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation between V_1 and V_2 realization 1: 0.999550080856796"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Correlation between V\_1 and V\_2 realization 2:"}\NormalTok{, correlation\_V1\_V2\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation between V_1 and V_2 realization 2: 0.999329664470164"
+\end{verbatim}
+
+\hypertarget{problem-4}{%
+\section{Problem 4}\label{problem-4}}
+
+\hypertarget{a}{%
+\subsubsection{(a)}\label{a}}
+
+See Handwritten notes.
+
+\hypertarget{b-produce-two-different-realizations-xt-t-1t-of-the-model-of-length-t-100-include-the-r-code}{%
+\subsubsection{(b) Produce two different realizations xt, t =
+1,\ldots,T, of the model of length T = 100; Include the R
+code;}\label{b-produce-two-different-realizations-xt-t-1t-of-the-model-of-length-t-100-include-the-r-code}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set the parameters}
+\NormalTok{mean\_value }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{variance\_value }\OtherTok{\textless{}{-}} \DecValTok{4}
+\NormalTok{TT }\OtherTok{\textless{}{-}} \DecValTok{100}
+\NormalTok{num\_simulations }\OtherTok{\textless{}{-}} \DecValTok{10000}
+
+\CommentTok{\# Initialize array to store values at T=100 from Monte Carlo}
+\NormalTok{X\_values\_at\_T\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(num\_simulations)}
+\NormalTok{X\_values\_at\_T\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(num\_simulations)}
+\NormalTok{Y\_values\_at\_T\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(num\_simulations)}
+\NormalTok{Y\_values\_at\_T\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(num\_simulations)}
+
+\CommentTok{\# Perform simulations}
+\ControlFlowTok{for}\NormalTok{ (sim }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{num\_simulations) \{}
+  \CommentTok{\# Generate random variable time series Z\_t white noise Normal(1,4)}
+\NormalTok{  Z\_1\_t }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(TT, }\AttributeTok{mean =}\NormalTok{ mean\_value, }\AttributeTok{sd =} \FunctionTok{sqrt}\NormalTok{(variance\_value))}
+\NormalTok{  Z\_2\_t }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(TT, }\AttributeTok{mean =}\NormalTok{ mean\_value, }\AttributeTok{sd =} \FunctionTok{sqrt}\NormalTok{(variance\_value))}
+  
+  \CommentTok{\# Initialize X\_t with X\_0 = 0 for the 2 realizations}
+\NormalTok{  X\_1\_t }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(TT)}
+\NormalTok{  X\_2\_t }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(TT)}
+\NormalTok{  Y\_1 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(TT)}
+\NormalTok{  Y\_2 }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(TT)}
+\NormalTok{  X\_1\_t[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{  X\_2\_t[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{0}
+  
+  \CommentTok{\# Generate AR(1) model for both realizations}
+  \ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{TT) \{}
+\NormalTok{    X\_1\_t[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_1\_t[t}\DecValTok{{-}1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ Z\_1\_t[t]}
+\NormalTok{    X\_2\_t[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_2\_t[t}\DecValTok{{-}1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ Z\_2\_t[t]}
+    
+    \CommentTok{\# Realizations of Y = X\_t * X\_(t{-}1)}
+\NormalTok{    Y\_1[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_1\_t[t] }\SpecialCharTok{*}\NormalTok{ X\_1\_t[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+\NormalTok{    Y\_2[t] }\OtherTok{\textless{}{-}}\NormalTok{ X\_2\_t[t] }\SpecialCharTok{*}\NormalTok{ X\_2\_t[t }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{]}
+    
+\NormalTok{  \}}
+  \CommentTok{\# Store the last element of X\_t in values\_at\_T for both realizations}
+\NormalTok{  X\_values\_at\_T\_1[sim] }\OtherTok{\textless{}{-}}\NormalTok{ X\_1\_t[TT]}
+\NormalTok{  X\_values\_at\_T\_2[sim] }\OtherTok{\textless{}{-}}\NormalTok{ X\_2\_t[TT]}
+\NormalTok{  Y\_values\_at\_T\_1[sim] }\OtherTok{\textless{}{-}}\NormalTok{ Y\_1[TT]}
+\NormalTok{  Y\_values\_at\_T\_2[sim] }\OtherTok{\textless{}{-}}\NormalTok{ Y\_2[TT]}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{c-compute-theoretically-ext-and-ex2-t-at-t-100-write-the-r-code-to-compute-these-quantities-note-do-not-plug-in-the-number-into-the-theoretical-result.}{%
+\subsubsection{(c) Compute theoretically EXt and E(X2 t) at t = 100;
+Write the R code to compute these quantities (Note: Do not plug in the
+number into the theoretical
+result).}\label{c-compute-theoretically-ext-and-ex2-t-at-t-100-write-the-r-code-to-compute-these-quantities-note-do-not-plug-in-the-number-into-the-theoretical-result.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of the realizations}
+\NormalTok{X\_mean\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_values\_at\_T\_1) }\CommentTok{\#mean of realization 1}
+\NormalTok{X\_mean\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_values\_at\_T\_2) }\CommentTok{\#mean of realization 2}
+
+\CommentTok{\# Calculate the mean of Z\^{}2}
+\NormalTok{X\_mean\_1\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_values\_at\_T\_1}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\CommentTok{\#mean of realization 1 squared}
+\NormalTok{X\_mean\_2\_squared }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(X\_values\_at\_T\_2}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\CommentTok{\#mean of realization 2 squared}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of realization 1 of X:"}\NormalTok{, X\_mean\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of realization 1 of X: 99.0869314191766"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of realization 1 of X squared:"}\NormalTok{, X\_mean\_1\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of realization 1 of X squared: 10207.9239705549"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of realization 2 of X:"}\NormalTok{, X\_mean\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of realization 2 of X: 99.4281070747329"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of realization 2 of X squared:"}\NormalTok{, X\_mean\_2\_squared))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of realization 2 of X squared: 10290.7276896512"
+\end{verbatim}
+
+\hypertarget{d-compute-theoretically-ext-xt1-and-corrxtxt1-at-t-100-write-the-r-code-to-compute-these-quantities-note-do-not-plug-in-the-number-into-the-theoretical-result.}{%
+\subsubsection{(d) Compute theoretically E(Xt * Xt−1) and Corr(Xt,Xt−1)
+at t = 100; Write the R code to compute these quantities (Note: Do not
+plug in the number into the theoretical
+result).}\label{d-compute-theoretically-ext-xt1-and-corrxtxt1-at-t-100-write-the-r-code-to-compute-these-quantities-note-do-not-plug-in-the-number-into-the-theoretical-result.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate the mean of Y = X\_t * X\_(t{-}1)}
+\NormalTok{mean\_Y\_1 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y\_values\_at\_T\_1)}
+\NormalTok{mean\_Y\_2 }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(Y\_values\_at\_T\_1)}
+
+\CommentTok{\# Display the results}
+\FunctionTok{print}\NormalTok{(}\StringTok{"Let Y = X\_t * X\_(t{-}1), then:"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Let Y = X_t * X_(t-1), then:"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of realization 1 of Y:"}\NormalTok{, mean\_Y\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of realization 1 of Y: 10102.2140670102"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Mean of realization 2 of Y:"}\NormalTok{, mean\_Y\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Mean of realization 2 of Y: 10102.2140670102"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlations}
+\NormalTok{V\_11 }\OtherTok{\textless{}{-}}\NormalTok{ X\_values\_at\_T\_1[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series]}
+\NormalTok{V\_12 }\OtherTok{\textless{}{-}}\NormalTok{ X\_values\_at\_T\_1[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(length\_of\_series }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)]}
+
+\NormalTok{V\_21 }\OtherTok{\textless{}{-}}\NormalTok{ X\_values\_at\_T\_2[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{length\_of\_series]}
+\NormalTok{V\_22 }\OtherTok{\textless{}{-}}\NormalTok{ X\_values\_at\_T\_2[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(length\_of\_series }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)]}
+
+\CommentTok{\# Calculate the correlation between V\_1 and V\_2}
+\NormalTok{correlation\_V1\_V2\_1 }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(V\_11, V\_12)}
+\NormalTok{correlation\_V1\_V2\_2 }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(V\_21, V\_22)}
+
+\CommentTok{\# Display the correlation}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Correlation between V\_1 and V\_2 realization 1:"}\NormalTok{, correlation\_V1\_V2\_1))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation between V_1 and V_2 realization 1: -0.0301604340412445"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Correlation between V\_1 and V\_2 realization 2:"}\NormalTok{, correlation\_V1\_V2\_2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation between V_1 and V_2 realization 2: -0.0278127439256604"
+\end{verbatim}
+
+\end{document}

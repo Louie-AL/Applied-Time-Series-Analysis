@@ -1,0 +1,4 @@
+"0",""
+"0","data_air = AirPassengers"
+"0","par(mfrow = c(1, 2))"
+"0","plot.ts(data_air)"

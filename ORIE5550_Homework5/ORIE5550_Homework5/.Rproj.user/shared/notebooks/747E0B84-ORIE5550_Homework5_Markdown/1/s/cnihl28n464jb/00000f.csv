@@ -1,0 +1,6 @@
+"0",""
+"0","# SARIMA$(1,0,0)\times (1,0,0)_{12}$"
+"0","set.seed(99)"
+"0","ts.e1 <- sarima.sim(ma=0.7, sma= -0.5, S=12,n=300)"
+"0","par(mfrow = c(1, 3))"
+"0","plot.ts(ts.e1)"

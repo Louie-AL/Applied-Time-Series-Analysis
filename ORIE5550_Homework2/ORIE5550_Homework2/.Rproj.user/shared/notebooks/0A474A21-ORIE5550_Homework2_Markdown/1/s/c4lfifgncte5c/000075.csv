@@ -1,0 +1,8 @@
+"0","plot.ts(aggregate[0:50,3], main = ""11am to 1pm"")"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework2/ORIE5550_Homework2/.Rproj.user/shared/notebooks/0A474A21-ORIE5550_Homework2_Markdown/1/8903130947d9a94a/c4lfifgncte5c_t/beb4af3cde2045c28a0bdb9c246b85a4.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

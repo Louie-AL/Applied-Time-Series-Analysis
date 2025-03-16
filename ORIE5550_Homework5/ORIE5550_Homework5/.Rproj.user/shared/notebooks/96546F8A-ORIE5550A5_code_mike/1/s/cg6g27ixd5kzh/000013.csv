@@ -1,0 +1,8 @@
+"0",""
+"0","#b)"
+"0",""
+"0","set.seed(99)"
+"0",""
+"0","ts.e1  <- sarima.sim(ma =0.7, sma = -0.5, S= 12, n =400)"
+"0","#ts.e1 <- as.numeric(ts.e1)"
+"0","plot.ts(ts.e1)"

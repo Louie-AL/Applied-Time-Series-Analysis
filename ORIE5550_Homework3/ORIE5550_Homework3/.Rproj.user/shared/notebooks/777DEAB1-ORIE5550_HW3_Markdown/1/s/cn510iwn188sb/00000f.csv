@@ -1,0 +1,5 @@
+"0",""
+"0","# MA(1) Model"
+"0","ma_sims <- arima.sim(model= list(ma = phi1), n = 500)"
+"0","par(mfrow = c(1, 2))"
+"0","plot(ma_sims, type=""l"")"

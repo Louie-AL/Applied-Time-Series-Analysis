@@ -1,0 +1,3 @@
+"0",""
+"0","# Plot residuals vs fitted values"
+"0","plot(autolmModel$fitted.values, autolmModel$residuals, xlab = ""Fitted values"", ylab = ""Residuals"", main = ""Residuals vs Fitted Values"")"

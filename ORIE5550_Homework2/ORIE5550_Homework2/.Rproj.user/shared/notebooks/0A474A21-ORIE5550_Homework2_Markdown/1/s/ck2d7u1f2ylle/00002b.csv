@@ -1,0 +1,9 @@
+"0","plot(y=aggregate[4:tt,2], x=aggregate[1:(tt-3),2], ylab = 'Current call volume',"
+"0","     xlab = '3 days ago call volume', main = ""Scatterplot t and t-3"")"
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework2/ORIE5550_Homework2/.Rproj.user/shared/notebooks/0A474A21-ORIE5550_Homework2_Markdown/1/8903130947d9a94a/ck2d7u1f2ylle_t/ef300ba78c3a4405a2a2c6e46d1640ff.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

@@ -1,0 +1,2 @@
+"0","# histogram"
+"0","hist(EQcount, breaks=30, prob=TRUE, main="""")"

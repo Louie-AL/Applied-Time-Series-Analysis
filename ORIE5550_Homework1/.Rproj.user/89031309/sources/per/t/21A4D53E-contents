@@ -1,0 +1,642 @@
+---
+title: 'Conditional Heteroscedastic Models'
+author: "Younghoon Kim, SDS @ Cornell"
+date: "Feb, 2024"
+output:
+  pdf_document: default
+  html_document: 
+    theme: cosmo
+    toc: yes
+    toc_float: yes
+bibliography: ./appl_tsa.bib
+---
+
+## What is this all about?
+
+Consider the daily returns (or percent change) of the Dow Jones Industrial Average (DJIA) from April 20, 2006 to April 20, 2016. 
+
+```{r echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+library(astsa)
+library(xts)
+ts <- diff(log(djia$Close))[-1] 
+plot.ts(ts, main="DJIA Returns")
+```
+
+One can easily point out the timing of the financial crisis of 2008. The mean of this series appears to be stable with an average return of (nearly) zero, however, highly volatile periods tend to be clustered together. In other words, there is a strong dependence of sudden bursts of variability in a return on the series own past.
+
+```{r echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+par(mfrow=c(1,2))
+acf(ts,lag.max=30)
+pacf(ts,lag.max=30)
+
+par(mfrow=c(1,2))
+acf(ts^2,lag.max=30)
+pacf(ts^2,lag.max=30)
+```
+
+
+## Data/Theory goals of the topic
+
+
+In this chapter, we discuss some of the time series models that have been found useful in the analysis of financial data. We qualify our scope to discrete-time models. The analogous models in continuous-time appears throughout many disciplines, such as mathematical finance, financial economics, financial engineering, and many other names.
+
+
+Although we focus on financial application, conditional heteroscedastic models introduced in this chapter are not limited to analyze financial data. However, to unify our terminology, we shall focus on financial time series.
+
+
+$\Large{\fbox{B}}$\ \ \ We are concerned with modeling the return or growth rate $r_t$ of a series of price (value) $X_t$,
+
+$$
+  r_t = \frac{x_t-x_{t-1}}{x_{t-1}},
+$$
+
+or the log-return
+
+$$
+  r_t = \log (x_t/x_{t-1}).
+$$
+
+
+**Definition** The *conditional variance*, or *volatility*, $h_t = \sigma_{t}^2$ of the return $r_t$ given the *information set at $t-1$*, $\mathcal{F}_{t-1}=\{r_{t-1},r_{t-2},\ldots,r_{1}\}$, is defined as 
+
+$$
+h_t = \sigma_{t}^2 = \mbox{Var}(r_{t}|\mathcal{F}_{t-1}).
+$$
+
+Note that the conditional variance of the models we have dealt with were assumed to be constant.
+
+**Note:** In some references, including Shumway and Stoffer (2017) [@shumway2017time], and the R package \texttt{fGarch} that we will use, the notation for conditional variance is $\sigma_t^2$. However, to avoid confusion regarding its second moment from its notation, such as $\mathbb{E}(\sigma_t^4)$, we use $h_t$ to indicate the volatility with power one.
+
+
+
+$\Large{\fbox{B}}$\ \ \ Consider AR(1), $X_t = \phi_1 X_{t-1} + Z_{t}$, $\{Z_t\}\sim\mbox{WN}(0,\sigma_{Z}^2)$.
+
+
+
+## Autoregressive conditional heteroscedasticity (ARCH)
+
+The first model that provides a systematic framework for volatility modeling is the ARCH model. The basic idea of ARCH models is that the return $r_t$ is serially uncorrelated, but the conditional variance $h_t$ can be described by lagged values squared $r_t$.
+
+
+**Definition** The *ARCH model at lag $p$* (ARCH$(p)$) models the return as introducing an equation of the conditional variance,
+
+$$
+\begin{aligned}
+ r_t &= \sqrt{h_t}e_t, \quad \{e_t\}\stackrel{i.i.d.}{\sim}\mathcal{N}(0,1), \\
+ h_t &= \alpha_0 + \sum_{i=1}^p \alpha_i r_{t-i}^2,
+\end{aligned}
+$$
+
+where $\alpha_0 >0$ and $\alpha_i \geq 0$, $i=1,\ldots,p$.
+
+
+$\Large{\fbox{B}}$\ \ \ Much is known about ARCH models. Discussion of some of the following facts of ARCH(1):
+
+* $\{r_t\}$ has a zero mean, $\mathbb{E}(r_t) = 0$.
+
+* $\{r_t\}$ is also an uncorrelated sequence. For $\ell >0$, $\mathbb{E}(r_t r_{t+\ell}) = 0$.
+
+* If $\alpha_1 < 1$, $\{r_t\}$ is causal stationary since 
+
+$$
+\mathbb{E}r_t^2 = \mbox{Var}(r_t) = \frac{\alpha_0}{1-\alpha_1}.
+$$
+
+* However, $\{r_t\}$ is not an IID sequence since it has non-constant variance related to prior observations (*conditional heteroscedasticity*).
+
+* The distribution of $\{r_t\}$ is symmetric. 
+
+* However, the fourth moment of $\{r_t\}$ is finite only when $3 \alpha_1^2 < 1$. This implies the distribution is *leptokurtic* (in other words, the distribution has "fat tails").
+
+
+
+**note:** It is often found that better fits to the data are obtained by relaxing the Gaussian assumption in $\{e_t\}$ and assuming that the distribution of $r_t$ given $\mathcal{F}_t$ has a heavier-tailed zero-mean distribution. For example, one can use Student’s $t$-distribution,
+
+$$
+  \left\{ \varepsilon_t = \sqrt{\frac{\nu}{\nu-2}}e_t \right\} \stackrel{i.i.d.}{\sim} t_{\nu},\quad \nu>2,
+$$
+
+where $\sqrt{\nu/(\nu-2)}$ is introduced to make the variance of $e_t$ equal to 1.
+
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+library(fGarch)
+library(tseries)
+library(forecast)
+
+set.seed(123)
+# ARCH(2) with alpha_0 = 1e-6 (by default), alpha_1 = 0.2, alpha_2 = 0.6
+spec1 <- garchSpec(model = list(alpha = c(0.2,0.6), beta = 0))
+
+# # std-ARCH(2) with df 5
+# spec1 <- garchSpec(model = list(alpha = c(0.2,0.6), beta = 0, shape=5), cond.dist="std")
+
+rt1 <- garchSim(spec1, n = 200)
+
+fit1 <- auto.arima(rt1$garch,max.p=5,max.q=5,
+                    allowdrift=TRUE,allowmean=TRUE,ic="aic")
+fit1
+
+resid.rt1 <- resid(fit1)
+# resid.rt1 <- rt1
+
+par(mfrow=c(1,3))
+plot.ts(resid.rt1)
+acf(resid.rt1^2,lag.max=30)
+lines(0:30, ARMAacf(ar=c(0.2,0.6),lag.max=30),col="red")
+pacf(resid.rt1^2,lag.max=30)
+
+par(mfrow=c(1,1))
+qqnorm(resid.rt1)
+qqline(resid.rt1)
+
+jarque.bera.test(resid.rt1)
+shapiro.test(resid.rt1)
+```
+
+
+### ARMA models with ARCH error
+
+It is also possible to combine a regression or an ARMA model for the mean with
+an ARCH model for the errors.
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+set.seed(123)
+
+# ARMA(1,1)-ARCH(2) with phi_1=0.5, theta_1=0.7
+spec2 <- garchSpec(model = list(ar=0.5, ma=0.7, alpha = c(0.2,0.6), beta = 0))
+rt2 <- garchSim(spec2, n = 200)
+
+plot.ts(rt2$garch)
+
+arma2 <- auto.arima(rt2$garch,max.p=5,max.q=5,
+                   allowdrift=TRUE,allowmean=TRUE,ic="aic")
+arma2
+
+resid.rt2 <- resid(arma2)
+lines(fitted.values(arma2),col="red")
+
+par(mfrow=c(1,3))
+plot.ts(resid.rt2)
+acf(resid.rt2^2,lag.max=30)
+lines(0:30, ARMAacf(ar=c(0.2,0.6),lag.max=30),col="red")
+pacf(resid.rt2^2,lag.max=30)
+
+par(mfrow=c(1,1))
+qqnorm(resid.rt2)
+qqline(resid.rt2)
+
+jarque.bera.test(resid.rt2)
+shapiro.test(resid.rt2)
+```
+
+
+
+$\Large{\fbox{H}}$\ \ \ Homework will ask you to explore more properties of ARCH models.
+
+
+### Testing for ARCH effect
+
+The squared return $\{r_t^2\}$ is used to check for existence of conditional heteroscedasticity, known as the *ARCH effects*. There are several ways to test the ARCH effect. The easier way is to apply usual "Ljung-Box" statistics for "$\{r_t^2\}$".
+
+Alternatively, one can use the *Lagrangian multiplier test*; The idea is that finding an arch effect is to equivalent to test $H_0:\alpha_1=\ldots=\alpha_p=0$ in the linear regression,
+
+$$
+r_t^2 = \alpha_0 + \alpha_1 r_{t-1}^2 + \ldots + \alpha_p r_{t-p}^2 + v_t, \quad t=p+1,\ldots,T.
+$$
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+#  Use Ljung–Box test for r_t^2
+Box.test(resid.rt1^2,lag=10,type="Ljung-Box")
+# Box.test(resid.rt1^2,lag=1,type="Ljung-Box")
+Box.test(resid.rt2^2,lag=10,type="Ljung-Box")
+
+#  Lagrange multiplier test
+library(FinTS)
+
+ArchTest(resid.rt1,lag=10)
+# ArchTest(resid.rt1,lag=1)
+ArchTest(resid.rt2,lag=10)
+```
+
+**Example:** Consider the DJIA example.
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+arma <- auto.arima(ts,max.p=5,max.q=5,
+                   allowdrift=TRUE,allowmean=TRUE,ic="aic")
+arma
+
+resid.arma <- resid(arma)
+
+par(mfrow=c(1,3))
+plot.ts(resid.arma)
+acf(resid.arma^2,lag.max=30)
+pacf(resid.arma^2,lag.max=30)
+
+par(mfrow=c(1,1))
+qqnorm(resid.arma)
+qqline(resid.arma)
+
+jarque.bera.test(resid.arma)
+shapiro.test(resid.arma)
+
+Box.test(resid.arma^2,lag=1,type="Ljung-Box")
+Box.test(resid.arma^2,lag=10,type="Ljung-Box")
+ArchTest(resid.arma,lag=1)
+ArchTest(resid.arma,lag=10)
+```
+
+
+## Generalized ARCH (GARCH)
+
+As seen in the example of DJIA, it often requires many parameters for lagged squared returns to adequately describe the volatility. Furthermore, ARCH model is restrictive to capture excess kurtosis in practice.
+
+
+Generalized ARCH (GARCH) by Bollerslev [-@bollerslev1986generalized], as the name suggests, is generalization of the ARCH($p$) process in the conditional variance equation.
+
+
+**Definition** The *GARCH model at lag $p,q$* (GARCH$(p,q)$) models the return by replacing an equation of the conditional variance with
+
+$$
+\begin{aligned}
+ r_t &= \sqrt{h_t}e_t, \quad \{e_t\}\stackrel{i.i.d.}{\sim}\mathcal{N}(0,1), \\
+ h_t &= \alpha_0 + \sum_{i=1}^p \alpha_i r_{t-i}^2 + \sum_{j=1}^q \beta_j h_{t-j},
+\end{aligned}
+$$
+
+where $\alpha_0 >0$, $\alpha_i \geq 0$, $i=1,\ldots,p$, are ARCH parameters and $\beta_j \geq 0$, $j=1,\ldots,q$ are GARCH parameters.
+
+
+$\Large{\fbox{B}}$\ \ \ Much is also known about GARCH models. Discussion of some of the following facts of GARCH(1,1):
+
+* The conditional distribution of $\{r_t\}$ has conditional heteroscedasticity
+
+$$
+  r_t | r_{t-1} \sim \mathcal{N}(0,\alpha_0 + \alpha_1 r_{t-1}^2 + \beta_1 h_{t-1})
+$$
+
+* If $\alpha_1 + \beta_1 < 1$, $\{r_t\}$ is causal stationary in that $\mathbb{E}r_t =0$ and 
+
+$$
+  \mathbb{E}r_t^2 = \frac{\alpha_0}{1-\alpha_1-\beta_1}.
+$$
+
+* The fourth moment of $\{r_t\}$ is finite only when $1 - (\alpha_1 + \beta_1)^2 -2 \alpha_1^2 > 0$. The distribution is also leptokurtic.
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+set.seed(123)
+
+# GARCH(1,1) with alpha_0 = 1e-6 (by default), alpha_1 = 0.1, beta_1 = 0.8
+spec3 <- garchSpec(model = list(alpha = 0.1, beta = 0.8))
+rt3 <- garchSim(spec3, n = 200)
+
+auto.arima(rt3$garch,max.p=5,max.q=5,allowdrift=TRUE,allowmean=TRUE,ic="aic")
+
+resid.rt3 <- rt3
+
+par(mfrow=c(1,3))
+plot.ts(resid.rt3)
+acf(resid.rt3^2,lag.max=30)
+lines(0:30, ARMAacf(ar=c(0.1+0.8),ma=-0.8,lag.max=30),col="red")
+pacf(resid.rt3^2,lag.max=30)
+
+par(mfrow=c(1,1))
+qqnorm(resid.rt3)
+qqline(resid.rt3)
+
+jarque.bera.test(resid.rt3)
+shapiro.test(resid.rt3)
+
+# Not working:
+# Box.test(resid.rt3^2,lag=1,type="Ljung-Box")
+# ArchTest(resid.rt3,lag=1)
+
+
+# ARMA(1,1)-GARCH(1,1) with phi_1=0.5, theta_1=0.7
+spec4 <- garchSpec(model = list(ar = 0.5, ma = 0.7, 
+                                alpha = 0.1, beta = 0.8)) 
+# # std-GARCH(1,1) with df 5
+# spec4 <- garchSpec(model = list(ar = 0.5, ma = 0.7, 
+#                                 alpha = 0.1, beta = 0.8, shape=5)) 
+rt4 <- garchSim(spec4, n = 200)
+
+plot.ts(rt4)
+
+arma4 <- auto.arima(rt4$garch,max.p=5,max.q=5,allowdrift=TRUE,allowmean=TRUE,ic="aic")
+
+arma4
+
+resid.rt4 <- resid(arma4)
+
+par(mfrow=c(1,3))
+plot.ts(resid.rt4)
+acf(resid.rt4^2,lag.max=30)
+lines(0:30, ARMAacf(ar=c(0.1+0.8),ma=-0.8,lag.max=30),col="red")
+pacf(resid.rt4^2,lag.max=30)
+
+par(mfrow=c(1,1))
+qqnorm(resid.rt4)
+qqline(resid.rt4)
+
+jarque.bera.test(resid.rt4)
+shapiro.test(resid.rt4)
+```
+
+
+$\Large{\fbox{H}}$\ \ \ Homework will also ask you to explore more properties of GARCH models.
+
+
+
+### Fitting ARCH and GARCH models
+
+Fitting ARCH and GARCH models is analogous to fitting AR models through conditional likelihood.
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+# ARCH(2) with alpha_0 = 1e-6 (by default), alpha_1 = 0.2, alpha_2 = 0.6
+fit1 <- garchFit(~garch(2,0),data=rt1,include.mean=FALSE,trace=FALSE)
+summary(fit1)
+
+# Model checking
+ht1 <- volatility(fit1,type="h")
+
+# standardized residuals
+res.fit1 <- rt1/sqrt(ht1)
+
+par(mfrow=c(1,3))
+plot.ts(res.fit1)
+acf(res.fit1^2,lag.max=20)
+pacf(res.fit1^2,lag.max=20)
+
+Box.test(res.fit1,type="Ljung-Box",lag=20)
+Box.test(res.fit1^2,type="Ljung-Box",lag=20)
+
+par(mfrow=c(1,1))
+qqnorm(res.fit1)
+qqline(res.fit1)
+
+
+# ARMA(1,1)-ARCH(2) with phi_1=0.5, theta_1=0.7
+fit2 <- garchFit(~arma(1,1)+garch(2,0),data=rt2,include.mean=FALSE,trace=FALSE)
+summary(fit2)
+
+plot.ts(rt2)
+lines(fitted.values(arma2),col="red")
+lines(fitted(fit2),col="blue")
+
+# Model checking
+ht2 <- volatility(fit2,type="h")
+res.fit2 <- residuals(fit2)/sqrt(ht2)
+
+par(mfrow=c(1,3))
+plot.ts(res.fit2)
+acf(res.fit2^2,lag.max=20)
+pacf(res.fit2^2,lag.max=20)
+
+Box.test(res.fit2,type="Ljung-Box",lag=20)
+Box.test(res.fit2^2,type="Ljung-Box",lag=20)
+
+par(mfrow=c(1,1))
+qqnorm(res.fit2)
+qqline(res.fit2)
+
+
+# GARCH(1,1) with alpha_0 = 0.5, alpha_1 = 0.1, beta_1 = 0.8
+fit3 <- garchFit(~garch(1,1),data=rt3,include.mean=FALSE,trace=FALSE)
+summary(fit3)
+
+# Model checking
+ht3 <- volatility(fit3,type="h")
+
+# standardized residuals
+res.fit3 <- rt3/sqrt(ht3)
+
+par(mfrow=c(1,3))
+plot.ts(res.fit3)
+acf(res.fit3^2,lag.max=20)
+pacf(res.fit3^2,lag.max=20)
+
+Box.test(res.fit3,type="Ljung-Box",lag=20)
+Box.test(res.fit3^2,type="Ljung-Box",lag=20)
+
+par(mfrow=c(1,1))
+qqnorm(res.fit3)
+qqline(res.fit3)
+```
+
+
+**Example:** Revisit the previous DJIA example.
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+fit.n <- garchFit(~arma(3,2)+garch(1,1),data=ts,trace=FALSE)
+summary(fit.n)
+
+resid.n <- residuals(fit.n)
+
+ht.n <- volatility(fit.n,type='h')
+
+plot.ts(resid.n^2)
+lines(ht.n,col="red")
+
+
+fit.t <- garchFit(~arma(3,2)+garch(1,1),data=ts,cond.dist="std",trace=FALSE)
+summary(fit.t)
+
+resid.t <- residuals(fit.t)
+
+ht.t <- volatility(fit.t,type='h')
+
+plot.ts(resid.t^2)
+lines(ht.t,col="red")
+```
+
+
+
+### Forecast of ARCH and GARCH models
+
+The forecast of ``volatility" in ARCH and GARCH models is analogous to the forecast of AR models.
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+predict(fit1,n.ahead=5) # mu = 6.9e-05
+predict(fit2,n.ahead=5,plot=TRUE)
+
+
+B <- coef(fit3)
+B
+TT <- length(rt3)
+
+h <- 30
+ht_hat <- vector("numeric",h)
+ht_hat[1] <- B[1] + B[2]*res.fit3[TT]^2 + B[3]*ht3[TT]
+for (i in 2:h){
+  ht_hat[i] <- B[1] + (B[2]+B[3])*ht_hat[i-1]
+}
+
+plot(ht_hat, type = "l")
+abline(h = B[1]/(1-B[2]-B[3]), lty=2)
+```
+
+**Note:** Since the volatility of an asset return is not directly observable, comparing the forecasting performance of different volatility models is a challenge. Consider the 1-step-ahead forecast. Then $\mathbb{E}(\hat{r}_{T+1}^2|\mathcal{F}_{T}) = h_{T+1}$. However, a single observation of a random variable with a known mean value cannot provide an accurate estimate of its variance. In this sense, out-of-sample forecasts and compare the forecast of volatility $\hat{h}_{T}(h)$ with the return $r_{T+h}^2$ in the test data is strictly speaking not proper.
+
+
+$\Large{\fbox{H}}$\ \ \ Homework will ask you to fit ARCH and GARCH models to real data.
+
+
+## Modified GARCH Processes
+
+There are many different extensions to the conditional variance models that were developed to handle the various situations. A few examples following are so-called "stylized features" associated with observed time series of the returns:
+
+* There is strong and persistent autocorrelation of volatility
+
+* there is asymmetry with respect to negative and positive disturbances
+
+We shall focus on three models, the one concerns the persistence in volatility and the rest two capture the asymmetric disturbances.
+
+
+**Integrated GARCH (IGARCH)** The *integrated GARCH* (IGARCH) model is a restrictive case when the AR polynomial of the GARCH equation has a unit root [-@engle1986modelling].
+
+$\Large{\fbox{B}}$\ \ \ $\{r_t\}$ satisfies IGARCH $(p,q)$ model if 
+
+$$
+(I - z)\phi(z) r_t^2 = \alpha_0 + (I-\beta(B))v_t,
+$$
+
+where $v_t = r_{t}^2 - h_t$ is white noise, $\phi(z)$ is a polynomial with all of roots outside the unit circle, and $\beta(z) = \sum_{j=1}^q \beta_j z^j$.
+
+
+* In practice, for GARCH models fitted to data, it is often found that $\alpha(1) + \beta(1) \approx 1$.
+
+* For IGARCH(1,1), when $\alpha_0=0$, it is known as *RiskMetrics volatility model*, which is often used for calculating the risk (value at risk, VaR) of the invested portfolio.
+
+$$
+  h_t = (1-\beta_1)(r_{t-1}^2 + \beta_1 r_{t-2}^2 + \beta_1^2 r_{t-3}^2 +\ldots \ ),
+$$
+which has a form of *exponential smoothing model*.
+
+```{r echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+BB <- coef(fit.n)
+as.numeric(BB[8] + BB[9]) # nearly 1
+
+TT <- length(ts)
+RM <- vector("numeric",TT)
+
+for (tt in 2:TT){
+  RM[tt] <- (1-BB[9])*sum( BB[9]^((tt-2):0)* resid.n[1:(tt-1)]^2 )
+}
+
+plot.ts(ht.n[-1])
+lines(RM[-1],col="red",lty=2)
+```
+
+
+
+**asymmetric power ARCH (apARCH)**  One useful model is the *asymmetric power ARCH at lag $p,q$* model (apARCH($p,q$)) by Ding et al. [-@ding1993long]. The return equation retains the same but the conditional variance equation is
+
+
+$$
+  h_t^{\delta/2} = \alpha_0 + \sum_{i=1}^p\alpha_{i}(|r_{t-i}| - \gamma_i r_{t-i})^{\delta} + \sum_{j=1}^q \beta_j h_{t-j}^{\delta/2},
+$$
+
+where $\alpha_0 > 0$, $\alpha_i \geq 0$, $i=1,\ldots,p$, $\beta_j \geq 0$, $j=1,\ldots,q$, with at least one $\alpha_i >0$ and $\beta_j \geq 0$. Also, $\delta > 0$ and the *leverage* parameters are $|\gamma_i| \leq 1$, $i=1,\ldots,p$.
+
+* $\delta=2$ and $\gamma_i=0$, $i=1,\ldots,p$ gives the GARCH model.
+
+* The parameters $\{\gamma_i\}$ are the leverage parameters, which are a measure of asymmetry. A positive (negative) value of $\gamma_i$'s means that past negative (positive) shocks have a deeper impact on current conditional variance than past positive (negative) shocks.
+
+```{r echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+xx <- -3:3
+gx_1 <- abs(xx) - (-0.5)*xx
+gx_2 <- abs(xx) - (0)*xx
+gx_3 <- abs(xx) - (0.5)*xx
+
+par(mfrow=c(1,3))
+plot(xx,gx_1,type='l',ylab="gamma=-0.5")
+plot(xx,gx_2,type='l',ylab="gamma=0")
+plot(xx,gx_3,type='l',ylab="gamma=0.5")
+```
+
+* There are several specific names for the model based on the various combinations of parameters. For example, for names of a few, the GJR-GARCH model is when $\delta=2$ and $0 \leq \gamma_i \leq 1$ and the threshold GARCH (TGARCH) is when $\delta=1$ and $0 \leq \gamma_i \leq 1$.
+
+**Example:** Recall the DJIA example. 
+
+```{r warning=FALSE, echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+ap.fit <- garchFit(~arma(3,2)+aparch(1,1), data=ts,cond.dist='std',trace=FALSE)
+summary(ap.fit)
+
+ht <- volatility(ap.fit,type='h')
+plot.ts(ht)
+```
+
+
+
+**Exponential GARCH (EGARCH)** Nelson [-@nelson1991conditional] proposed the *exponential GARCH* (EGARCH) to model asymmetric effects between positive and negative values of $\{e_t\}$ by using weighted innovation 
+
+$$
+g(e_t) = e_t + \lambda(|e_t| - \mathbb{E}|e_t|) 
+= \left\{\begin{array}{ll} 
+  (1+\lambda) e_t + \lambda E|e_t|, & \textrm{if }e_t \geq 0, \\
+  (1-\lambda) e_t + \lambda E|e_t|, & \textrm{if }e_t < 0.
+\end{array}\right.
+$$
+
+for symmetric distribution of $\{e_t\}$. 
+
+**Note:** For standard normal distribution, $\mathbb{E}(|e_t|) = \sqrt{2/\pi}$. For $t$-distribution with $\nu$, $\mathbb{E}(|e_t|) = \frac{2\sqrt{\nu-2}\Gamma[(\nu+1)/2]}{(\nu-1)\Gamma(\nu/2)\sqrt{\pi}}$.
+
+
+```{r echo=TRUE, message=FALSE, fig.width=10, fig.height=4}
+# standard normal,
+set.seed(123)
+
+e <- rnorm(100)
+ge_1 <- e + 0.5*(abs(e) - sqrt(2/pi))
+ge_2 <- e - 0.5*(abs(e) - sqrt(2/pi))
+
+par(mfrow=c(1,3))
+plot.ts(ge_1,ylab="lambda=0.5")
+plot.ts(e,ylab="lambda=0")
+plot.ts(ge_2,ylab="lambda=-0.5")
+  
+# t-distribution with \nu,
+nu <- 5
+m <- (2*sqrt(nu-2)*gamma((nu+1)/2))/((nu-1)*gamma(nu/2)*sqrt(pi))
+
+e <- rt(100,df=5)
+ge_1 <- e + 0.5*(abs(e) - m)
+ge_2 <- e - 0.5*(abs(e) - m)
+
+par(mfrow=c(1,3))
+plot.ts(ge_1,ylab="lambda=0.5")
+plot.ts(e,ylab="lambda=0")
+plot.ts(ge_2,ylab="lambda=-0.5")
+```
+
+
+The conditional variance equation of EGARCH$(p,q)$ is defined as
+
+$$
+  \ell_t = \ln(h_t) = \alpha_0 + \sum_{i=1}^p \alpha_i g(e_{t-i}) + \sum_{j=1}^q \gamma_j \ell_{t-j},
+$$
+
+where $\alpha_i\in\mathbb{R}$, $i=0,1,\ldots,p$. Note that for $\gamma(z) = 1 - \gamma_1 z - \ldots - \gamma_q z^q$, the model is stationary when $1-\gamma(z) \neq 0$ for all $|z|\leq 1$. 
+
+
+
+## Some final notes
+
+  * Another R package \texttt{rugarch} enables the implementation of other conditional variance models including IGARCH and EGARCH.
+
+  * The development of volatility modeling has been driven by the evolution of financial derivatives. The motivation behind this is to fit the so-called Black-Scholes equation [-@black1973pricing] to market data. The critical assumption of this model is that volatility is constant, as we've learned, which is generally hard to accept.
+  
+  * The collection of conditional heteroscedastic models with various stylized features is called ``GARCH Zoo". See Bollerslev [-@bollerslev2008glossary] and Shephard [-@shephard2020statistical].
+  
+  * In terms of forecasting performance, Hansen and Lunde [-@hansen2005forecast] systematically compared various (G)ARCH-type models.
+
+
+
+## Reading
+
+* Chapters 7.1 - 7.3 in Brockwell and Davis [-@brockwell2016introduction] and Chapter 5.3 in Shumway and Stoffer [-@shumway2017time] (with R examples).
+* Chapters 3.1 - 3.8, 3.16 in Tsay [-@tsay2010analysis]
+
+
+### References

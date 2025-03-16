@@ -1,0 +1,4 @@
+"0","legend(""topright"", inset = 0.05,"
+"0","       legend=c(""Normal"", ""std""),"
+"0","       col = c(""red"", ""black""), lty = 1:1, lwd=2)"
+"0",""

@@ -1,0 +1,1 @@
+"0","plot(data[,""cpi""], lmModel$residuals, xlab = ""CPI"", ylab = ""Residuals"", main = ""Residuals vs CPI"")"

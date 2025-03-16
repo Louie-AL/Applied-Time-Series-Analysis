@@ -1,0 +1,2 @@
+"0","# prob of state 2"
+"0","tsplot(ts(posterior(fm)[,3], start=1900), ylab = expression(hat(pi)[~2]*'(t|n)'));  abline(h=.5, lty=2)"

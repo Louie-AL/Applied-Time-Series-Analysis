@@ -1,0 +1,1 @@
+"0","lines(forecasted_periods, arma.forecast$pred, lwd = 2)"

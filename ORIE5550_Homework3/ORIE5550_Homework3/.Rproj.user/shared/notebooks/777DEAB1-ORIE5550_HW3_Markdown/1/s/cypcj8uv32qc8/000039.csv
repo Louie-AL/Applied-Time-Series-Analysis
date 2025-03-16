@@ -1,0 +1,2 @@
+"0","lines(seq(0,40),ARMAacf(ar=c(phi1_3,phi2_3),lag.max=40),lty=""dashed"",col=""red"")"
+"0",""

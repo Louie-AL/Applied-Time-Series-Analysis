@@ -1,0 +1,1 @@
+"0","text(EQcount, col=6*posterior(fm)[,1]-2, labels=posterior(fm)[,1])"

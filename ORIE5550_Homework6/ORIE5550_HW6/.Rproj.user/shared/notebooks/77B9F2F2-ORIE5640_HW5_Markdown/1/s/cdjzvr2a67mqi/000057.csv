@@ -1,0 +1,4 @@
+"0","plot(data[,""invest""], autolmModel$residuals, xlab = ""Investment"", ylab = ""Residuals"", main = ""Residuals vs Investment"")"
+"2","Error in xy.coords(x, y, xlabel, ylabel, log) : 
+  'x' and 'y' lengths differ
+"

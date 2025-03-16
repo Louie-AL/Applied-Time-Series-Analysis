@@ -1,0 +1,1 @@
+{"frames":[{"func":"ts.plot(globtemp, globtempl, col = c(6, 4), ylab = \"Temperature Deviations\")","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error: object 'globtemp' not found\n"}

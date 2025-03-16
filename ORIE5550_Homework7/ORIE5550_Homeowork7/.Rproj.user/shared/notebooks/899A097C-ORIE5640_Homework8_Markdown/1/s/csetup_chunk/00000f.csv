@@ -1,0 +1,59 @@
+"0","#install.packages(""rugarch"")"
+"0","library(AER)"
+"2","Warning: package ‘AER’ was built under R version 4.3.3"
+"2","Loading required package: car
+"
+"2","Warning: package ‘car’ was built under R version 4.3.3"
+"2","Loading required package: carData
+"
+"2","Warning: package ‘carData’ was built under R version 4.3.3"
+"2","
+Attaching package: ‘car’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    recode
+
+"
+"2","The following object is masked from ‘package:purrr’:
+
+    some
+
+"
+"2","Loading required package: lmtest
+"
+"2","Warning: package ‘lmtest’ was built under R version 4.3.2"
+"2","Loading required package: sandwich
+"
+"2","Warning: package ‘sandwich’ was built under R version 4.3.3"
+"2","Loading required package: survival
+"
+"0","library(forecast)"
+"0","library(tseries)"
+"0","library(fracdiff)"
+"2","Warning: package ‘fracdiff’ was built under R version 4.3.2"
+"0","library(urca)"
+"0","library(tseries)"
+"0","library(AER)"
+"0","library(rugarch)"
+"2","Warning: package ‘rugarch’ was built under R version 4.3.3"
+"2","Loading required package: parallel
+"
+"2","
+Attaching package: ‘rugarch’
+
+"
+"2","The following object is masked from ‘package:purrr’:
+
+    reduce
+
+"
+"2","The following object is masked from ‘package:stats’:
+
+    sigma
+
+"
+"0","library(fGarch) # for qstd() function"
+"0",""
+"0",""

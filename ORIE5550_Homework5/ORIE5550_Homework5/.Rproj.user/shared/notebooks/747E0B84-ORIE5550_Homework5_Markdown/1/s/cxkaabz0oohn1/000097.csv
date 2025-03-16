@@ -1,0 +1,4 @@
+"0","ts168_train3<-ts168_train-rep(ts168_train_perm$pmean,23)"
+"0",""
+"0",""
+"0","par(mfrow=c(1,3))"

@@ -1,0 +1,482 @@
+---
+title: "ORIE5550_Homework8_markdown"
+author: "Luis Alonso Cendra Villalobos (lc2234)"
+date: "2024-04-22"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+
+
+```{r}
+#install.packages("tidyverse")
+options(warn=-1) # turn off warnings
+library(astsa)
+library(perARMA)
+library(forecast)
+library(urca)
+library(xts)
+library(fGarch)
+library(tseries)
+library(FinTS)
+library(tidyverse)
+library(forecast)
+options(warn=0) # turn on warnings
+library(signal)
+
+```
+
+# Question 1
+
+### (a)
+
+```{r q1_a}
+
+set.seed(1)
+phi1 <- 2*(1/1.1)*cos(pi/8)
+phi2 <--1/(1.1)^2
+xt <- arima.sim(list(order=c(2,0,0),ar=c(phi1,phi2)),n=200)
+
+T = 200
+tt = seq(1:200)
+
+#fit regression model
+model <- lm( xt ~ cos(2*tt*pi*10/T) + sin(2*tt*pi*10/T))
+summary(model)
+
+a_10 <- 0
+b_10 <- 0
+
+for (s in 1:T) {
+  a_10 <- a_10 + 2/T *(xt[s] * cos((2 * pi * 10 * s) / T))
+  b_10 <- b_10 + 2/T *(xt[s] * sin((2 * pi * 10 * s) / T))
+
+}
+
+a_10
+b_10
+
+```
+
+Values are the same as expected.
+
+### (b)
+
+```{r q1_b}
+
+x_bar = mean(xt)
+LHS_b <- 0
+RHS_b <- 0
+
+for (i in 1:T) {
+  LHS_b <- LHS_b + (xt[i] - x_bar)^2
+}
+LHS_b = (1/T) * LHS_b
+
+for (k in 1:(T/2 - 1)) {
+  inner_a <- 0
+  inner_b <- 0
+  for (s in 1:T) {
+    # Calculate the term and add it to the inner sum
+    inner_a <- inner_a + (2/T * (xt[s] * cos((2 * pi * k * s) / T)))
+    inner_b <- inner_b + (2/T * (xt[s] * sin((2 * pi * k * s) / T)))
+
+  }
+  RHS_b <- RHS_b + inner_a^2 + inner_b^2
+}
+a_T2 <- 0
+for (s in 1:T) {
+  a_T2 <- a_T2 + 1/T *(xt[s] * cos((pi * s)))
+}
+RHS_b = (1/2) * RHS_b + (a_T2)^2
+
+LHS_b
+RHS_b
+
+```
+
+Values are the same as expected.
+
+### (c)
+
+```{r q1_c}
+
+LHS_c <- LHS_b
+RHS_c <- 0
+
+spec.x = spec.pgram(xt, log='no',taper=0,pad=0,fast=FALSE,demean=TRUE,detrend=FALSE)
+abline(v=0.5 * pi, lty=3, col = "red")
+
+RHS_c = (2/T) * sum(spec.x$spec[1:(T/2-1)]) + (1/T)*spec.x$spec[T/2]
+
+LHS_c
+RHS_c
+
+```
+
+Values are the same as expected.
+
+### (d)
+
+```{r q1_d}
+
+
+f_1d <- function(t,inner_ak,inner_bk,x_bar, k_star, final_time){
+  h <- 0  # Initialize h_w
+  h <- x_bar + inner_ak * (cos((2 * pi * k_star * t) / final_time)) + inner_bk * (sin((2 * pi * k_star * t) / final_time))
+  return(h)
+}
+
+max_index <- which.max(spec.x$spec) #Max spectrum I(w_k)
+max_index
+w_k_star = spec.x$freq[max_index] #w_k = k/T in [0,1/2] range
+w_k_star
+k_star = w_k_star * T #11
+k_star
+
+spec.x = spec.pgram(xt, log='no',taper=0,pad=0,fast=FALSE,demean=FALSE,detrend=FALSE)
+abline(v=spec.x$freq[max_index], lty=3)
+
+f_1d_values <- numeric(T)
+inner_ak <- 0
+inner_bk <- 0
+tt <- seq(1,T,by=1)
+
+for (s in 1:T) {
+  inner_ak <- inner_ak + ((xt[s] * cos((2 * pi * k_star * s) / T)))
+}
+inner_ak <- 2/T * inner_ak
+
+
+for (s in 1:T) {
+  inner_bk <- inner_bk + ((xt[s] * sin((2 * pi * k_star * s) / T)))
+}
+inner_bk <- 2/T * inner_bk
+
+
+for (t in 1:T) {
+  f_1d_values[t] <- f_1d(t,inner_ak,inner_bk,x_bar, k_star, T)
+}
+plot(tt, xt, type = "l", xlab = "Time", ylab = "f_1d_values", main = "Fourier Series Approximation")
+lines(tt, f_1d_values, col = "red")
+legend("topright", legend = c("xt", "f_1d_values"), col = c("black", "red"), lty = 1)
+
+var_yt = sd(f_1d_values)^2
+var_xt = sd(xt)^2
+pct_var = var_yt/var_xt
+pct_var
+
+```
+
+We can see that the percentage of variation is $(`r pct_var`)$.
+
+
+# Question 2
+
+### (b)
+
+```{r q2b}
+
+library(signal)
+
+i <- complex(real = 0, imaginary = 1)
+
+# Define a function to retrieve the precomputed exponential values
+compute_exponential <- function(w, k) {
+  
+  exponential_array <- array(dim = k+1)
+  exponential_array[1] = 1
+  
+  for (j in 1:k) {
+    exponential_array[j+1] <- exp(-1 * i * j * w)
+  }
+  return(exponential_array)
+}
+
+h_w <- function(w, bf_a, bf_b) {
+  h_w <- 0  # Initialize h_w
+  k = length(bf_a)-1
+  #print(k)
+  #print(length(compute_exponential(w, k)))
+  h_w <- abs((as.vector(bf_b) %*% as.vector(compute_exponential(w, k))))^2 / abs((as.vector(bf_a) %*% as.vector(compute_exponential(w, k))))^2
+  return(h_w)
+}
+
+bf <- butter(n = 5, c(low=0.1, high=0.5))  # Create Butterworth filter
+
+w_values <- seq(0, pi, length.out = 100)
+hw_values <- array(dim = length(w_values))
+
+for (p in 1:length(w_values)){ 
+  hw_values[p] = h_w(w_values[p], bf$a, bf$b)
+}
+
+plot(w_values, hw_values, type = "l", xlab = "w", ylab = "Real part of h(w)", main = "Frequency Response")
+abline(v=0.1 * pi, lty=3)
+abline(v=0.5 * pi, lty=3)
+
+```
+
+As seen with high and low pass band filters, Butterworth filter is an example of band-pass filters as it only allows certain frequencies within the interval [low,high] to pass and filters out the rest.
+
+# Question 3
+
+### (a) 
+
+```{r q3a}
+
+spectral_density <- function(phi, w_j) {
+  i <- complex(real = 0, imaginary = 1)
+  h <- 0  # Initialize h_w
+  h <- 1 / (2 * pi * abs((1 - phi * exp(-1*i*w_j)))^2)
+  return(h)
+}
+
+set.seed(1)
+
+sigma_sq <- 1  # Variance of the error term
+n <- 200  # Length of the time series
+T = n 
+phi_values <- seq(-1, 1, by = 0.01)
+xt <- arima.sim(list(order=c(1,0,0), ar=c(0.5)), n = n, sd = sqrt(sigma_sq))
+spec.x <- spec.pgram(xt, log='no', taper=0, pad=0, fast=FALSE, demean=FALSE, detrend=FALSE)
+
+L_phi <- array(dim = length(phi_values))
+
+for (k in 1:length(phi_values)){
+  phi = phi_values[k]
+  L_phi_iter = 0
+  
+  for (j in 1:(T/2)){
+    w_j = (2*pi*j) / T
+    L_phi_iter = L_phi_iter + log(spectral_density(phi,w_j)) + (spec.x$spec[j]/(2*pi*spectral_density(phi,w_j)))
+  }
+  
+  L_phi[k] <- L_phi_iter
+}
+# Plot the spectral density estimate and theoretical spectral density
+#L_phi
+
+minimizer_j = which.min(L_phi)
+minimizer_j
+phi_values[minimizer_j]
+minimizer_w_j = (2*pi*minimizer_j) / T
+minimizer_w_j
+spec.x$freq[which.min(spec.x$spec)]
+
+# Plot L_phi as a function of phi values
+plot(phi_values, L_phi, type = 'l', xlab = 'Phi', ylab = 'Log Likelihood', main = 'Log Likelihood vs Phi')
+
+
+```
+
+The minimizer of $L(\phi_1)$ agrees with the model parameter being $\approx 0.5$
+
+### (b) 
+
+```{r q3b}
+
+spectral_density <- function(phi, theta, w_j) {
+  i <- complex(real = 0, imaginary = 1)
+
+  h <- 0  # Initialize h_w
+  h <- (1 * (abs((1 + theta * exp(-1*i*w_j)))^2)) / (2 * pi * abs((1 - phi * exp(-1*i*w_j)))^2)
+  return(h)
+}
+
+set.seed(1)
+
+sigma_sq <- 1  # Variance of the error term
+n <- 200  # Length of the time series
+T = n 
+phi_values <- seq(-1, 1, by = 0.01)
+xt_b <- arima.sim(list(order=c(1,0,1), ar=c(0.5), ma=c(0.6)), n = n, sd = sqrt(sigma_sq))
+spec.x_b <- spec.pgram(xt_b, log='no', taper=0, pad=0, fast=FALSE, demean=FALSE, detrend=FALSE)
+
+L_phi <- array(dim = length(phi_values))
+
+for (k in 1:length(phi_values)){
+  phi = phi_values[k]
+  L_phi_iter = 0
+  
+  for (j in 1:(T/2)){
+    w_j = (2*pi*j) / T
+    L_phi_iter = L_phi_iter + log(spectral_density(phi, 0.6, w_j)) + (spec.x_b$spec[j]/(2*pi*spectral_density(phi, 0.6, w_j)))
+  }
+  
+  L_phi[k] <- L_phi_iter
+}
+# Plot the spectral density estimate and theoretical spectral density
+#L_phi
+
+minimizer_j = which.min(L_phi)
+minimizer_j
+phi_values[minimizer_j]
+minimizer_w_j = (minimizer_j) / T
+minimizer_w_j
+spec.x$freq[which.min(spec.x$spec)]
+
+# Plot L_phi as a function of phi values
+plot(phi_values, L_phi, type = 'l', xlab = 'Phi', ylab = 'Log Likelihood', main = 'Log Likelihood vs Phi')
+
+
+```
+
+The minimizer of $L(\phi_1)$ agrees with the model parameter being $\approx 0.5$
+
+# Question 4
+
+### (a) Suppose that in a sample of size 100 from an AR(1) process with mean µ, ϕ1 = 0.6, and  σ2_Z = 2, we obtain ¯ x = 0.271. Construct an approximate 95% confidence interval for µ. Are the data compatible with the hypothesis that µ = 0?
+
+```{r q4a}
+
+set.seed(123)
+phi_1 = 0.6
+xt <- arima.sim(n=100,list(ar = phi_1))
+x_bar = 0.271
+var_z = 2
+var_x = var_z/(1-(phi_1)^2)
+var_xbar = var_x/100 * ((1+phi_1)/(1-phi_1))
+
+CI = c(x_bar - qnorm(0.975)*sqrt(var_xbar),x_bar + qnorm(0.975)*sqrt(var_xbar))
+CI
+
+```
+
+We can see that $\mu = 0 \in  (`r CI`)$, thus, we can state that $\mu = 0 $ with a level of confidence of $95$%.
+
+### (b) Suppose that in a sample of size 100, we obtain ˆ ρX(1) = 0.438 and ˆ ρX(2) = 0.145. Assuming that the data were generated from an AR(1) model, construct approximate 95% confidence intervals for both ρX(1) and ρX(2). Based on these two confidence intervals, are the data consistent with an AR(1) model with ϕ1 = 0.8?
+
+```{r q4b}
+
+bartlett_ar <- function(coef,lag.max,K=50){
+  
+  py <- ARMAacf(ar=coef,lag.max=(K+lag.max))
+  
+  w <- matrix(NA,lag.max,lag.max)
+  for (i in 1:lag.max){
+    for (j in 1:lag.max){
+      idx_k <- -K:K
+      idx_kpi <- idx_k + i
+      idx_kmi <- idx_k - i
+      idx_kpj <- idx_k + j 
+      idx_kmj <- idx_k - j
+      
+      w[i,j] <- sum( py[abs(idx_kpi)+1]*py[abs(idx_kpj)+1] 
+                          + py[abs(idx_kmi)+1]*py[abs(idx_kmj)+1]
+                          +2*py[i+1]*py[j+1]*py[abs(idx_k)+1]^2
+                          -2*py[i+1]*py[abs(idx_k)+1]*py[abs(idx_kpj)+1]
+                          -2*py[j+1]*py[abs(idx_k)+1]*py[abs(idx_kpi)+1] )
+    }
+  }
+  return(w)
+}
+
+
+#samp_acf <- acf(xt,lag.max=2,plot=FALSE)$acf
+samp_acf <- c(1, 0.438, 0.145)
+w <- bartlett_ar(phi_1,2)
+theo_acf <- ARMAacf(ar=c(phi_1),lag.max=2)
+
+plot(0:2,samp_acf,ylim=c(-1,1),type="h",col="blue",xlab="Lag",ylab="ACF")
+abline(h=0,col="black")
+lines(1:2,samp_acf[-1]+qnorm(0.975)*sqrt(diag(w))/sqrt(200),col="red",lty=2)
+lines(1:2,samp_acf[-1]-qnorm(0.975)*sqrt(diag(w))/sqrt(200),col="red",lty=2)
+points(1:2,theo_acf[-1],pch=20)
+legend("bottomright",legend=c("Sample ACF","95% conf Bds","Model ACF"),
+       col=c("blue","red","black"),lty=c(1,2,NA),pch=c(NA,NA,20))
+abline(h = 0.8, col = "green")  # h for horizontal line
+
+```
+
+The data is not consistent with an AR(1) model with $\phi_1 = 0.8$ at a level of confidence of $95$%.
+
+### (c) Use set.seed(1) and the function arima.sim to generate the two series xt1 and xt2 of 3 length 200 by 
+
+### xt1 <- arima.sim(n=200,list(ar=0.5)) 
+### xt2 <- arima.sim(n=200,list(ma=c(0.5,-0.25,0.125))) 
+
+### We want to know whether the dependence structures of the series are the same. Plot the two time series; Test H0 : ρxt1 = ρxt2 by using (i) the Wald-type test with L = 20 and (ii) the  test defined on the spectral domain; Conclude whether their results are identical.
+
+```{r q4c_generateTS}
+
+set.seed(1)
+
+xt1 <- arima.sim(n=200,list(ar=0.5))
+xt2 <- arima.sim(n=200,list(ma=c(0.5,-0.25,0.125)))
+
+par(mfrow=c(1,2))
+plot.ts(xt1)
+plot.ts(xt2)
+
+```
+
+Now lets see the Wald test results.
+
+```{r 4c_Wald}
+
+dep_str_test0 <- function(x1, x2, L){
+  n <- length(x1)
+  if(missing(L)){ L = floor(n^(1/3)); }
+ 
+  K <- 30
+  py1 <- acf(x1, lag.max=K+L, type = "covariance", plot=FALSE)$acf
+  py2 <- acf(x2, lag.max=K+L, type = "covariance", plot=FALSE)$acf
+  p1 <-  py1 - py2
+  py <-  as.vector((py1 + py2)/2)
+  
+## Calculate W matrix
+  W <- matrix(0, L+1, L+1)
+  for(i in 0:L){
+    for(j in 0:L){
+       idk <- -K:K
+       id1 <- idk-i+j
+       id2 <- idk + j
+       id3 <- idk - i
+       idk <- abs(idk)+1
+       id1 <- abs(id1)+1 
+       id2 <- abs(id2)+1 
+       id3 <- abs(id3)+1
+       W[i+1, j+1]  <- sum(py[idk]*py[id1] + py[id2]*py[id3]);
+    }
+  }
+  
+  p1 <- p1[1:(L+1)]
+  tstat <- n/2*t(p1)%*%solve(W)%*%p1
+  pval <- 1- pchisq(tstat, L+1)
+  
+  return(list(tstat=tstat, pval=pval))
+}
+
+dep_str_test0(xt1, xt2, 20) # L = 20
+
+```
+
+At a level of significance of $5$% we cannot reject the null hypothesis that $\rho_X(h)=\rho_Y(h)$ up to lag 20.
+
+```{r q4c_spectrum}
+
+dep_str_test1 <- function(x1, x2,m=NULL){
+
+  n <- length(x1)
+  sp1 <-  spec.pgram(x1, log='no',taper=0,pad=0,fast=FALSE,demean=TRUE,detrend=FALSE)
+  sp2 <-  spec.pgram(x2, log='no',taper=0,pad=0,fast=FALSE,demean=TRUE,detrend=FALSE)
+  
+  # side note: smoothing does not affect the conclusion
+  # sp1 <-  spec.pgram(x1, spans=2*m+1, log='no',taper=0,pad=0,fast=FALSE,demean=TRUE,detrend=FALSE)
+  # sp2 <-  spec.pgram(x2, spans=2*m+1, log='no',taper=0,pad=0,fast=FALSE,demean=TRUE,detrend=FALSE)
+  
+  D <- log(sp1$spec) - log(sp2$spec)
+  tstat <- mean(abs(D[-length(D)]))
+  crit <- log(4) + 1.96*sqrt(1.368/(length(D)-1))
+
+return(list(tstat=tstat, crit=crit))  
+}
+
+dep_str_test1(xt1,xt2)
+
+```
+
+Given that the t-statistic is lower than the critical value, the sprectrum approach also coincides that, at a level of significance of $5$%, we cannot reject the null hypothesis that $\rho_X(h)=\rho_Y(h)$, but this time for infinite amount of lags.

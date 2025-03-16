@@ -1,0 +1,3 @@
+"0",""
+"0","# Plot residuals vs predictor variables"
+"0","par(mfrow=c(2,2)) # Arrange plots in a 2x2 grid"

@@ -1,0 +1,635 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={ORIE5550 - Homework 2},
+  pdfauthor={Luis Alonso Cendra Villalobos (lc2234)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{ORIE5550 - Homework 2}
+\author{Luis Alonso Cendra Villalobos (lc2234)}
+\date{2024-02-09}
+
+\begin{document}
+\maketitle
+
+\hypertarget{problem-2.}{%
+\section{Problem 2.}\label{problem-2.}}
+
+Consider the time series deaths in the R package itsmr with the monthly
+accidental death numbers in the US, 1973-1978. Do the following for this
+time series:
+
+\hypertarget{a.}{%
+\subsection{2.a.}\label{a.}}
+
+Use the R function decompose to obtain trend and seasonal components of
+the time series and plot the results; Produce a time plot depicting the
+time series and the sum of the trend and seasonal components; Produce a
+time plot and a correlogram of the residuals obtained after removing the
+trend and seasonal components from the series; Include the R code;
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#install.packages("itsmr")}
+
+\FunctionTok{library}\NormalTok{(itsmr)}
+\NormalTok{deaths}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  9007  8106  8928  9137 10017 10826 11317 10744  9713  9938  9161  8927
+## [13]  7750  6981  8038  8422  8714  9512 10120  9823  8743  9129  8710  8680
+## [25]  8162  7306  8124  7870  9387  9556 10093  9620  8285  8433  8160  8034
+## [37]  7717  7461  7776  7925  8634  8945 10078  9179  8037  8488  7874  8647
+## [49]  7792  6957  7726  8106  8890  9299 10625  9302  8314  8850  8265  8796
+## [61]  7836  6892  7791  8129  9115  9434 10484  9827  9110  9070  8633  9240
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{deathsTS }\OtherTok{=} \FunctionTok{ts}\NormalTok{(deaths, }\AttributeTok{frequency=}\DecValTok{12}\NormalTok{)}
+
+\NormalTok{deathsDecomp }\OtherTok{\textless{}{-}} \FunctionTok{decompose}\NormalTok{(deathsTS, }\StringTok{"additive"}\NormalTok{)}
+
+\NormalTok{deathsDecompTrendSeasonal }\OtherTok{\textless{}{-}}\NormalTok{ deathsDecomp}\SpecialCharTok{$}\NormalTok{trend }\SpecialCharTok{+}\NormalTok{ deathsDecomp}\SpecialCharTok{$}\NormalTok{seasonal}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(deathsTS,  }\AttributeTok{main =} \StringTok{"Deaths original time series, US, 1973{-}1978."}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(deathsDecompTrendSeasonal,  }\AttributeTok{main =} \StringTok{"Deaths: trend and seasonal components"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/2a-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(deathsDecomp}\SpecialCharTok{$}\NormalTok{random,  }\AttributeTok{main =} \StringTok{"Residuals"}\NormalTok{)}
+\FunctionTok{acf}\NormalTok{(deathsDecomp}\SpecialCharTok{$}\NormalTok{random, }\AttributeTok{lag.max =} \DecValTok{7}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"Correlogram for residuals"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/2a-2.pdf}
+
+\hypertarget{b.}{%
+\subsection{2.b.}\label{b.}}
+
+Fit through least squares R function lm the quadratic trend and seasonal
+component (see HW paper for the equation) to the series and produce the
+fit results; Produce a time plot depicting the time series and the sum
+of the fitted trend and seasonal components; Produce a time plot and a
+correlogram of the residuals obtained after removing the trend and
+seasonal components from the series; Include the R code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tt }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{72}\NormalTok{)}
+\NormalTok{y }\OtherTok{\textless{}{-}}\NormalTok{ deathsDecompTrendSeasonal}
+
+\CommentTok{\#fit regression model}
+\NormalTok{results }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{( y }\SpecialCharTok{\textasciitilde{}} \FunctionTok{poly}\NormalTok{(tt, }\DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+                 \FunctionTok{cos}\NormalTok{(}\DecValTok{2}\SpecialCharTok{*}\NormalTok{tt}\SpecialCharTok{*}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{12}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{sin}\NormalTok{(}\DecValTok{2}\SpecialCharTok{*}\NormalTok{tt}\SpecialCharTok{*}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{12}\NormalTok{) }\SpecialCharTok{+}
+                 \FunctionTok{cos}\NormalTok{(}\DecValTok{2}\SpecialCharTok{*}\NormalTok{tt}\SpecialCharTok{*}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{6}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{sin}\NormalTok{(}\DecValTok{2}\SpecialCharTok{*}\NormalTok{tt}\SpecialCharTok{*}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{6}\NormalTok{) }\SpecialCharTok{+}
+                 \FunctionTok{cos}\NormalTok{(}\DecValTok{2}\SpecialCharTok{*}\NormalTok{tt}\SpecialCharTok{*}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{sin}\NormalTok{(}\DecValTok{2}\SpecialCharTok{*}\NormalTok{tt}\SpecialCharTok{*}\NormalTok{pi}\SpecialCharTok{/}\DecValTok{4}\NormalTok{), }\AttributeTok{data =}\NormalTok{ deathsDecompTrendSeasonal)}
+\CommentTok{\# poly trend and sine{-}cos is seasonal variance, 12 yerly, 6 semester, 4 quarter}
+
+\CommentTok{\#view model summary}
+\FunctionTok{summary}\NormalTok{(results)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ poly(tt, 2) + cos(2 * tt * pi/12) + sin(2 * 
+##     tt * pi/12) + cos(2 * tt * pi/6) + sin(2 * tt * pi/6) + cos(2 * 
+##     tt * pi/4) + sin(2 * tt * pi/4), data = deathsDecompTrendSeasonal)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -401.08 -209.45   21.03  183.86  461.17 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)          8781.49      37.13 236.495  < 2e-16 ***
+## poly(tt, 2)1        -1950.14     345.25  -5.648 7.25e-07 ***
+## poly(tt, 2)2         2476.48     407.40   6.079 1.54e-07 ***
+## cos(2 * tt * pi/12)  -716.12      47.18 -15.179  < 2e-16 ***
+## sin(2 * tt * pi/12)  -754.52      47.67 -15.827  < 2e-16 ***
+## cos(2 * tt * pi/6)    398.97      47.15   8.462 2.77e-11 ***
+## sin(2 * tt * pi/6)     82.16      47.23   1.740  0.08795 .  
+## cos(2 * tt * pi/4)    157.13      47.15   3.333  0.00161 ** 
+## sin(2 * tt * pi/4)   -213.82      47.15  -4.535 3.52e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 258 on 51 degrees of freedom
+##   (12 observations deleted due to missingness)
+## Multiple R-squared:  0.9317, Adjusted R-squared:  0.921 
+## F-statistic:    87 on 8 and 51 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(deathsDecompTrendSeasonal,  }\AttributeTok{main =} \StringTok{"Deaths: trend and seasonal components"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(results}\SpecialCharTok{$}\NormalTok{fitted.values,  }\AttributeTok{main =} \StringTok{"Fitted values"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/2b-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(deathsDecomp}\SpecialCharTok{$}\NormalTok{random,  }\AttributeTok{main =} \StringTok{"Residual component"}\NormalTok{)}
+\FunctionTok{acf}\NormalTok{(deathsDecomp}\SpecialCharTok{$}\NormalTok{random, }\AttributeTok{lag.max =} \DecValTok{7}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"Correlogram for residual component"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/2b-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(results}\SpecialCharTok{$}\NormalTok{residuals,  }\AttributeTok{main =} \StringTok{"Regression residuals"}\NormalTok{)}
+\FunctionTok{acf}\NormalTok{(results}\SpecialCharTok{$}\NormalTok{residuals, }\AttributeTok{lag.max =} \DecValTok{7}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"Correlogram for regression residuals"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/2b-3.pdf}
+
+\hypertarget{problem-4.}{%
+\section{Problem 4.}\label{problem-4.}}
+
+Thoughsample ACFwaspresented in class as a tool for stationary models,
+note that it could also be computed for any time series. In fact, if
+time series have trends or/and seasonal components, this could also be
+seen from their correlograms.
+
+\hypertarget{a.-1}{%
+\subsection{4.a.}\label{a.-1}}
+
+Read the time series data prices from the R package fpp3 and produce a
+time plot of the series prices\$wheat; As you will see, the series
+clearly has a decreasing trend. Now, produce and include a correlogram
+of this series up to lag 30; Explain the pattern that you see;
+Supplement your explanation by drawing a few scatter plots of xt versus
+xt−h, the correlation between which yields the sample ACF at lag h.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#install.packages("fpp3")}
+\FunctionTok{library}\NormalTok{(}\StringTok{"fpp3"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'fpp3' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## -- Attaching packages ---------------------------------------------- fpp3 0.5 --
+\end{verbatim}
+
+\begin{verbatim}
+## v tibble      3.2.1     v tsibble     1.1.4
+## v dplyr       1.1.4     v tsibbledata 0.4.1
+## v tidyr       1.3.1     v feasts      0.3.1
+## v lubridate   1.9.3     v fable       0.3.3
+## v ggplot2     3.4.4     v fabletools  0.3.4
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'tibble' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'dplyr' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'tidyr' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'lubridate' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'ggplot2' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'tsibble' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'tsibbledata' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'feasts' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'fabletools' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'fable' was built under R version 4.3.2
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ------------------------------------------------- fpp3_conflicts --
+## x lubridate::date()      masks base::date()
+## x dplyr::filter()        masks stats::filter()
+## x fabletools::forecast() masks itsmr::forecast()
+## x tsibble::intersect()   masks base::intersect()
+## x tsibble::interval()    masks lubridate::interval()
+## x dplyr::lag()           masks stats::lag()
+## x tsibble::setdiff()     masks base::setdiff()
+## x tsibble::union()       masks base::union()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{wheatTS }\OtherTok{=} \FunctionTok{ts}\NormalTok{(prices}\SpecialCharTok{$}\NormalTok{wheat, }\AttributeTok{frequency=}\DecValTok{1}\NormalTok{)}
+
+
+\NormalTok{tt }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(wheatTS)}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(wheatTS, }\AttributeTok{main =} \StringTok{"Wheat prices time series"}\NormalTok{)}
+\FunctionTok{acf}\NormalTok{(wheatTS, }\AttributeTok{lag.max =} \DecValTok{30}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"Correlogram for wheat time series"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4a-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{wheatTS[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{wheatTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}1}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Price of Wheat\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}1 Year Ago Price of Wheat\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t and t{-}1"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{wheatTS[}\DecValTok{3}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{wheatTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}2}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Price of Wheat\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}2 Years Ago Price of Wheat\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t{-}1 and t{-}2"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{wheatTS[}\DecValTok{4}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{wheatTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}3}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Price of Wheat\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}3 Years Ago Price of Wheat\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t{-}2 and t{-}3"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4a-2.pdf}
+
+\hypertarget{explanation}{%
+\subsubsection{Explanation:}\label{explanation}}
+
+From the Autocorrelation Functions (ACF) we can observe that lags, even
+up to 30, are significant and decay very slowly. This indicates the
+wheat prices today are auto correlated with prices up to 30 years prior.
+This could be because the series is not stationary (although we cannot
+state it from the ACFs alone), which is exhibited by the decreasing
+trend in the plot.Some reasons may be an overall increase in wheat
+producers globally (Argentina, China, etc.), the entry of wheat
+substitutes to the market, changes in global consumer preferences (as
+living standards rise, wheat consumption may not), etc. Additionally,
+from the scatter plots we can see that prices are likely correlated
+across years.
+
+\hypertarget{b.-1}{%
+\subsection{4.b.}\label{b.-1}}
+
+Read the time series data bank calls from the R package fpp3. The data
+is a five-minute call volume handled on weekdays between 7:00am and
+9:05pm, beginning 3 March 2003 for 164 days; Aggregate the volume data
+into 2-hour blocks, 7am-9am, 9am-11am, \ldots, with the every last block
+7pm-9:05pm of each day being 5 minutes longer; Produce the time plot of
+the aggregated time series for the first 50 days; As you will see, the
+series clearly exhibits seasonal variations. Now, produce and include a
+correlogram of this series up to lag 40; Explain the pattern that you
+see; Supplement your explanation by drawing a few scatter plots of xt
+versus xt−h as the problem above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(bank\_calls) }\CommentTok{\# transform to dataframe}
+
+\CommentTok{\#remove UTC tag}
+\NormalTok{date\_as\_posix }\OtherTok{\textless{}{-}} \FunctionTok{strptime}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime, }\AttributeTok{format=}\StringTok{"\%Y{-}\%m{-}\%d \%H:\%M:\%S"}\NormalTok{, }\AttributeTok{tz=}\StringTok{"UTC"}\NormalTok{) }
+\FunctionTok{invisible}\NormalTok{(}\FunctionTok{strftime}\NormalTok{(date\_as\_posix, }\AttributeTok{format=}\StringTok{"\%Y{-}\%m{-}\%d \%H:\%M"}\NormalTok{, }\AttributeTok{tz=}\StringTok{"UTC"}\NormalTok{))}
+
+\CommentTok{\# matrix with 164 rows (days) and 7 cols (intervals)}
+\NormalTok{aggregate }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{164}\NormalTok{, }\AttributeTok{ncol =} \DecValTok{7}\NormalTok{)}
+
+\CommentTok{\# start on day 1}
+\NormalTok{day\_count }\OtherTok{=} \DecValTok{1}
+
+\CommentTok{\#start looping through the matrix starting in day 1 until day 164 }
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \FunctionTok{seq\_along}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime)) \{}
+  
+  \CommentTok{\# if day changes, sum one to the index pointer}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{date}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{!=} \FunctionTok{date}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i}\DecValTok{{-}1}\NormalTok{]) }\SpecialCharTok{\&\&}\NormalTok{ i }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{) \{}
+\NormalTok{    day\_count }\OtherTok{=}\NormalTok{ day\_count }\SpecialCharTok{+} \DecValTok{1}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Check under which interval the timestamp falls into and sum the calls}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{7} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}} \DecValTok{9}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{1}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{9} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}} \DecValTok{11}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{2}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{2}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{11} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}} \DecValTok{13}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{3}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{3}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{13} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}} \DecValTok{15}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{4}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{4}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{15} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}} \DecValTok{17}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{5}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{5}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{17} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}} \DecValTok{19}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{6}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{6}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textgreater{}=} \DecValTok{19} \SpecialCharTok{\&\&} \FunctionTok{hour}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{DateTime[i]) }\SpecialCharTok{\textless{}=} \DecValTok{21}\NormalTok{ ) \{}
+\NormalTok{    aggregate[day\_count,}\DecValTok{7}\NormalTok{] }\OtherTok{=}\NormalTok{ aggregate[day\_count,}\DecValTok{7}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{Calls[i]}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\FunctionTok{print}\NormalTok{(}\StringTok{"First 50 days of each interval are plotted below."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "First 50 days of each interval are plotted below."
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{1}\NormalTok{], }\AttributeTok{main =} \StringTok{"7am to 9am"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{2}\NormalTok{], }\AttributeTok{main =} \StringTok{"9am to 11am"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{3}\NormalTok{], }\AttributeTok{main =} \StringTok{"11am to 1pm"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{4}\NormalTok{], }\AttributeTok{main =} \StringTok{"1pm to 3pm"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{5}\NormalTok{], }\AttributeTok{main =} \StringTok{"3pm to 5pm"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{6}\NormalTok{], }\AttributeTok{main =} \StringTok{"5pm to 7pm"}\NormalTok{)}
+\FunctionTok{plot.ts}\NormalTok{(aggregate[}\DecValTok{0}\SpecialCharTok{:}\DecValTok{50}\NormalTok{,}\DecValTok{7}\NormalTok{], }\AttributeTok{main =} \StringTok{"7pm to 9:05pm"}\NormalTok{)}
+
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4b-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\StringTok{"Correlograms up to lag 40 for each interval are plotted below."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlograms up to lag 40 for each interval are plotted below."
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{1}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 7am to 9am"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{2}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 9am to 11am"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{3}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 11am to 1pm"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{4}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 1pm to 3pm"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{5}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 3pm to 5pm"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{6}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 5pm to 7pm"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\FunctionTok{acf}\NormalTok{(aggregate[,}\DecValTok{7}\NormalTok{], }\AttributeTok{lag.max =} \DecValTok{40}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"ACF for 7pm to 9:05pm"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4b-2.pdf}
+
+\hypertarget{due-to-space-constraints-i-will-only-present-the-scatterplots-for-the-9am-to-11am-time-interval}{%
+\subsubsection{Due to space constraints, I will only present the
+scatterplots for the 9am to 11am time
+interval}\label{due-to-space-constraints-i-will-only-present-the-scatterplots-for-the-9am-to-11am-time-interval}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tt }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(aggregate[,}\DecValTok{2}\NormalTok{])}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{aggregate[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{tt,}\DecValTok{2}\NormalTok{], }\AttributeTok{x=}\NormalTok{aggregate[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}1}\NormalTok{),}\DecValTok{2}\NormalTok{], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current call volume\textquotesingle{}}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{\textquotesingle{}Yesterdays call volume\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t and t{-}1"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{aggregate[}\DecValTok{3}\SpecialCharTok{:}\NormalTok{tt,}\DecValTok{2}\NormalTok{], }\AttributeTok{x=}\NormalTok{aggregate[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}2}\NormalTok{),}\DecValTok{2}\NormalTok{], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current call volume\textquotesingle{}}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{\textquotesingle{}2 days ago call volume\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t and t{-}2"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{aggregate[}\DecValTok{4}\SpecialCharTok{:}\NormalTok{tt,}\DecValTok{2}\NormalTok{], }\AttributeTok{x=}\NormalTok{aggregate[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}3}\NormalTok{),}\DecValTok{2}\NormalTok{], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current call volume\textquotesingle{}}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{\textquotesingle{}3 days ago call volume\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t and t{-}3"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{aggregate[}\DecValTok{5}\SpecialCharTok{:}\NormalTok{tt,}\DecValTok{2}\NormalTok{], }\AttributeTok{x=}\NormalTok{aggregate[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}4}\NormalTok{),}\DecValTok{2}\NormalTok{], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current call volume\textquotesingle{}}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{\textquotesingle{}4 days ago call volume\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t and t{-}4"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4b2-1.pdf}
+
+\hypertarget{explanation-1}{%
+\subsubsection{Explanation:}\label{explanation-1}}
+
+From the first 50 days plot, we can see that there are seasonal
+variations for this series. Interestingly, all plots start at a peak,
+and the first date of the series is March 3rd, 2003, which is a Monday;
+further, the number of peaks in the graphs is close to the number of
+Mondays in the time interval (50/5 \textasciitilde{} 10). We could make
+a hypothesis that bank calls are higher during Mondays. Possible reasons
+are: there is no customer service during the weekends (which is
+exhibited in the database), therefore, cases start queuing until they
+are resolved on Monday; or maybe, people wait until Monday to ``get up
+to date'' with financial responsibilities; or, most problems related
+with bank clients occur during the weekends (e.g., denied or lost
+cards), etc.
+
+From the Autocorrelation Functions (ACF) we can observe that for most
+2-hour blocks, the lags 1 and multiples of 5 (5,10, etc.) appear to be
+significant further motivating the Monday's hypothesis. The rest of lags
+do not seem to be significant and decay very sharply. This indicates the
+bank calls are not auto correlated with previous days calls, which could
+be an indicator of successful customer service (a client whose problem
+has been solved wont call back) or rather a reflection of the
+characteristics of the call (for instance, these could be calls asking
+for one-off information or help, like ``I cant access my online
+banking.'' or ``I lost my card, can you replace it?'').
+
+\hypertarget{c.}{%
+\subsection{4.c.}\label{c.}}
+
+Read the time series data canadian gas from the R package fpp3, giving
+monthly Canadian gas production, billions of cubic metres, January 1960-
+February 2005; Produce its time plot; As you will see, the series
+clearly has a trend and exhibits seasonal variations. Now, produce and
+include a correlogram of this series; Explain the pattern that you see;
+Supplement your explanation by drawing a few scatter plots of xt versus
+xt−h as the problems above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cadgasTS }\OtherTok{=} \FunctionTok{ts}\NormalTok{(canadian\_gas}\SpecialCharTok{$}\NormalTok{Volume, canadian\_gas}\SpecialCharTok{$}\NormalTok{Month, }\AttributeTok{frequency=}\DecValTok{12}\NormalTok{)}
+
+
+\NormalTok{tt }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(cadgasTS)}
+
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\FunctionTok{plot.ts}\NormalTok{(cadgasTS, }\AttributeTok{main =} \StringTok{"Canadian Gas Production time series"}\NormalTok{)}
+\FunctionTok{acf}\NormalTok{(cadgasTS, }\AttributeTok{lag.max =} \DecValTok{36}\NormalTok{, }
+    \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{main =} \StringTok{"Correlogram for canadian gas time series"}\NormalTok{,}
+    \AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4c-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow=}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{cadgasTS[}\DecValTok{2}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{cadgasTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}1}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current Production\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}1 month ago production\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t and t{-}1"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{cadgasTS[}\DecValTok{3}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{cadgasTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}2}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current Production\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}2 months ago production\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t{-}1 and t{-}2"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{cadgasTS[}\DecValTok{4}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{cadgasTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}3}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current Production\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}3 months ago production\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t{-}2 and t{-}3"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{y=}\NormalTok{cadgasTS[}\DecValTok{5}\SpecialCharTok{:}\NormalTok{tt], }\AttributeTok{x=}\NormalTok{cadgasTS[}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(tt}\DecValTok{{-}4}\NormalTok{)], }\AttributeTok{ylab =} \StringTok{\textquotesingle{}Current Production\textquotesingle{}}\NormalTok{, }\AttributeTok{xlab =} \StringTok{\textquotesingle{}4 months ago production\textquotesingle{}}\NormalTok{, }\AttributeTok{main =} \StringTok{"Scatterplot t{-}3 and t{-}4"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ORIE5550_Homework2_Markdown_files/figure-latex/4c-2.pdf}
+
+\hypertarget{explanation-2}{%
+\subsubsection{Explanation:}\label{explanation-2}}
+
+From the Autocorrelation Functions (ACF) we can observe that lags, even
+up to 36, are significant and decay very slowly. This indicates the
+Canadian gas monthly production today are auto correlated with prices up
+to 36 months prior. This could be because the series is not stationary
+(although we cannot state it from the ACFs alone), which is exhibited by
+the seasonality variations and trend in the plot. Additionally, from the
+scatter plots we can see that current production is correlated with
+previous months production. Some reasons may that shocks that affect gas
+production are persistent through time, gas production could be
+regulated and quotas implemented, gas is consumed the highest during
+winter months, among others.
+
+\end{document}

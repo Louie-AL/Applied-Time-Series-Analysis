@@ -1,0 +1,25 @@
+"0","#install.packages(""astsa"")"
+"0","#install.packages(""perARMA"")"
+"0","library(perARMA)"
+"2","Warning: package ‘perARMA’ was built under R version 4.3.3"
+"0","library(astsa)"
+"2","Warning: package ‘astsa’ was built under R version 4.3.2"
+"0","library(forecast)"
+"2","Warning: package ‘forecast’ was built under R version 4.3.2"
+"2","Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo 
+"
+"2","
+Attaching package: ‘forecast’
+
+"
+"2","The following object is masked from ‘package:astsa’:
+
+    gas
+
+"
+"0","library(urca)"
+"2","Warning: package ‘urca’ was built under R version 4.3.2"
+"0","#load(""h5q4_student.RData"")"
+"0",""

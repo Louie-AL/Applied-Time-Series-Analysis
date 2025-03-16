@@ -1,0 +1,2 @@
+"0","xx  <- c(time(ts.e1), rev(time(ts.e1)) )"
+"0","yy  <- c((Tsm+Ssm)-(p1+p2), rev((Tsm+Ssm)+(p1+p2)) )"

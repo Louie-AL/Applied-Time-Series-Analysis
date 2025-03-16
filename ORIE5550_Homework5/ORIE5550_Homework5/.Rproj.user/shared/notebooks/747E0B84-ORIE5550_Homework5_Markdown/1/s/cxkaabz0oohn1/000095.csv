@@ -1,0 +1,16 @@
+"0","library(fpp3)"
+"0",""
+"0","#Weekly means"
+"0","weekly_mean<-c(mean(ts168_train[1:35]),diff(cumsum(ts168_train)[seq(35,140,35)]/35),mean(ts168_train[141:161]))"
+"0",""
+"0","#Demean the series"
+"0","ts168_train2 <- ts168_train - head(rep(weekly_mean,each=35),161)"
+"0",""
+"0","#calculating and removing seasonal/periodic means"
+"0","ts168_train<-as.numeric(ts168_train)"
+"0","ts168_train_perm <-permest(t(ts168_train),T_t=7,alpha=0.05,missval=NaN,datastr='ts168_train')"
+"2","found  23  periods of length  7  with remainder of  0 
+
+"
+"2","2323232323232300000007.712519775811318.598584818172078.837874066809758.744379440269878.674223404899258.378983473047117.875089891829357.633396250704788.498863216729898.796463100935868.704922669854098.639862915899348.307851322992667.801309017145537.791643300917838.698306419614258.879285032683648.783836210685648.708583893899168.450115623101567.94887076651316
+"

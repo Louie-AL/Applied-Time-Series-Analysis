@@ -1,0 +1,10 @@
+"0",""
+"0","ts168_test_demean <- ts168_test - mean(ts168_test)"
+"0",""
+"2","Warning in gzfile(file, ""wb"") :"
+"2","
+ "
+"2"," cannot open compressed file 'C:/Users/alons/OneDrive - Cornell University/Cornell University/Spring 2024/ORIE 5550/ORIE5550_Homework5/ORIE5550_Homework5/.Rproj.user/shared/notebooks/747E0B84-ORIE5550_Homework5_Markdown/1/8903130956e3b23f/c51ot04wl6jvz_t/044eb0bf28cc4aa2987e1ba49b77fd43.snapshot', probable reason 'No such file or directory'
+"
+"2","Error in gzfile(file, ""wb"") : cannot open the connection
+"

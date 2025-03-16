@@ -1,0 +1,297 @@
+---
+title: "ORIE5550_HW3_Markdown"
+author: "Luis Alonso Cendra Villalobos (lc2234)"
+date: "2024-02-20"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+
+### (a) Check if the following AR models are causal
+
+See handwritten notes for further calculations.
+
+```{r q1a}
+
+# Model 1
+phi1_1 <- -0.2
+phi2_1 <- 0.48
+polyroot(c(1, -1 * phi1_1, -1 * phi2_1))
+
+# Model 2
+phi1_2 <- -0.2
+phi2_2 <- -0.48
+polyroot(c(1, -1 * phi1_2, -1 * phi2_2))
+
+# Model 3
+phi1_3 <- -1.8
+phi2_3 <- -0.81
+polyroot(c(1, -1 * phi1_3, -1 * phi2_3))
+
+```
+
+### (b) For those models in (a) that are causal, write their ACFs explicitly; Compare your result with the computation by ARMAacf; Include R code.
+
+### (c) For those models in (a) that are causal, generate a realization of length 200; Plot the realization and correlogram; Overlap the theoretical ACF curve derived at (b) onto the drawn correlogram.
+
+Both (b) and (c) will be calculated in a single block of code for each model.
+
+For explicit ACFs requested in part (b), see handwritten notes.
+
+```{r q1b1}
+
+h <- seq(0, 20, by = 1)
+
+# Model 1
+phi1_1 <- -0.2
+phi2_1 <- 0.48
+ARMAacf(ar=c(phi1_1,phi2_1))
+ar2_1 <- arima.sim(list(order = c(2,0,0), ar = c(phi1_1,phi2_1) ), n = 200)
+theoretical_acf1 <- ((64/91)*(-5/4)^(-h) + (27/91)*(5/3)^(-h))
+par(mfrow = c(1, 2))
+plot(ar2_1, type="l", main="Realizations for Model 1")
+acf(ar2_1, lag.max=20, ylim=c(-1, 1), main="ACF & Theoretical ACF Model1")
+lines(h,  theoretical_acf1, lty="dashed", col="purple")
+
+# re-shape for comparisson
+h <- seq(1, 20, by = 1)
+theoretical_acf1 <- ((64/91)*(-5/4)^(-h) + (27/91)*(5/3)^(-h))
+ARMAacf_model1 <- ARMAacf(ar=c(phi1_1,phi2_1), lag.max = 20)
+stopifnot(all.equal(unname(ARMAacf_model1), c(1, theoretical_acf1)))
+equal_1 <- all.equal(unname(ARMAacf_model1), c(1, theoretical_acf1))
+cat("Are the theoretical ACF and ARMAacf equal for Model 1? R/", equal_1)
+
+```
+
+```{r q1b2}
+h <- seq(0, 20, by = 1)
+
+# Model 2
+phi1_2 <- -0.2
+phi2_2 <- -0.48
+ARMAacf(ar=c(phi1_2,phi2_2))
+ar2_2 <- arima.sim(list(order = c(2,0,0), ar = c(phi1_2,phi2_2) ), n = 200)
+# solving system of equations
+rho_0 = 1
+rho_1 = phi1_2/(1-phi2_2)
+A <- matrix(c(1, 1, 1/polyroot(c(1, -1 * phi1_2, -1 * phi2_2))[1], 1/polyroot(c(1, -1 * phi1_2, -1 * phi2_2))[2]), nrow = 2, byrow = TRUE)
+B <- c(rho_0, rho_1)
+coeff <- solve(A, B)
+print(coeff)
+theoretical_acf2 <- Re(coeff[1] * (polyroot(c(1, -1 * phi1_2, -1 * phi2_2))[1])**(-h) + coeff[2] * (polyroot(c(1, -1 * phi1_2, -1 * phi2_2))[2])**(-h))
+par(mfrow = c(1, 2))
+plot(ar2_2, type="l", main="Realizations for Model 2")
+acf(ar2_2, lag.max=20, ylim=c(-1, 1),  main="ACF & Theoretical ACF Model2")
+lines(h,  theoretical_acf2, lty="dashed", col="purple")
+
+# re-shape for comparisson
+h <- seq(1, 20, by = 1)
+theoretical_acf2 <- Re(coeff[1] * (polyroot(c(1, -1 * phi1_2, -1 * phi2_2))[1])**(-h) + coeff[2] * (polyroot(c(1, -1 * phi1_2, -1 * phi2_2))[2])**(-h))
+ARMAacf_model2 <- ARMAacf(ar=c(phi1_2,phi2_2),lag.max=20)
+stopifnot(all.equal(unname(ARMAacf_model2), c(1, theoretical_acf2)))
+equal_2 <- all.equal(unname(ARMAacf_model2), c(1, theoretical_acf2))
+cat("Are the theoretical ACF and ARMAacf equal for Model 2? R/", equal_2)
+
+```
+
+```{r q1b3}
+
+h <- seq(0, 20, by = 1)
+
+# Model 3
+phi1_3 <- -1.8
+phi2_3 <- -0.81
+ARMAacf(ar=c(phi1_3,phi2_3))
+ar2_3 <- arima.sim(list(order = c(2,0,0), ar = c(phi1_3,phi2_3) ), n = 200)
+theoretical_acf3 <- ((-10/9)^(-h) * (1+(19/181)*h))
+par(mfrow = c(1, 2))
+plot(ar2_3, type="l", main="Realizations Plot Model 3")
+acf(ar2_3, lag.max=20, ylim=c(-1, 1), main="ACF & Theoretical ACF Model3")
+lines(h,  theoretical_acf3, lty="dashed", col="purple")
+
+# re-shape for comparisson
+h <- seq(1, 20, by = 1)
+theoretical_acf3 <- ((-10/9)^(-h) * (1+(19/181)*h))
+ARMAacf_model3 <- ARMAacf(ar=c(phi1_3,phi2_3),lag.max=20)
+stopifnot(all.equal(unname(ARMAacf_model3), c(1, theoretical_acf3)))
+equal_3 <- all.equal(unname(ARMAacf_model3), c(1, theoretical_acf3))
+cat("Are the theoretical ACF and ARMAacf equal for Model 3? R/", equal_3)
+
+
+```
+
+# Problem 2
+
+### (a) Compute the ACVF and ACF of ${X_t}$
+
+See handwritten notes.
+
+### (b) Generate a realization of length 500 from the AR(7) model. Plot the correlogram for the realization up to lag 20; For each plot, overlap the theoretical ACF curve of the MA(1) model and the corresponding AR(7) model with different colors; Repeat the same exercise by  generating the realization from the MA(1). [Note: You can use ARMAacf for both AR(7) and MA(1) in this problem.]
+
+```{r q2b AR}
+
+phi1 <-  0.7
+phi2 <- -0.7 ** 2
+phi3 <-  0.7 ** 3
+phi4 <- -0.7 ** 4
+phi5 <-  0.7 ** 5
+phi6 <- -0.7 ** 6
+phi7 <-  0.7 ** 7
+
+ARMAacf(ar=c(phi1,phi2, phi3, phi4, phi5, phi6, phi7))
+ar_sims <- arima.sim(list(order = c(7,0,0), ar = c(phi1,phi2, phi3, phi4, phi5, phi6, phi7) ), n = 500)
+par(mfrow = c(1, 2))
+plot(ar_sims, type="l")
+acf(ar_sims, lag.max=20, ylim=c(-1, 1))
+lines(seq(0,20),ARMAacf(ar=c(phi1,phi2, phi3, phi4, phi5, phi6, phi7),lag.max=20),lty="dashed",col="red")
+lines(seq(0,20),ARMAacf(ma=c(0.7),lag.max=20),lty="dashed",col="green")
+```
+
+
+```{r q2b MA}
+
+# MA(1) Model
+ma_sims <- arima.sim(model= list(ma = phi1), n = 500)
+par(mfrow = c(1, 2))
+plot(ma_sims, type="l")
+acf(ma_sims, lag.max=20, ylim=c(-1, 1))
+lines(seq(0,20),ARMAacf(ar=c(phi1,phi2, phi3, phi4, phi5, phi6, phi7),lag.max=20),lty="dashed",col="red")
+lines(seq(0,20),ARMAacf(ma=c(0.7),lag.max=20),lty="dashed",col="green")
+
+
+```
+
+# Problem 3
+
+See handwritten notes.
+
+# Problem 4
+
+Consider the time series of sunspot numbers “SUNSPOTS.txt” posted on Canvas under Homework folder. Do the following.
+
+```{r q4}
+# import library for auto.arima and forecast functions 
+#install.packages("forecast")
+library(forecast)
+
+# import library for coeftest function 
+#install.packages("lmtest")
+library(lmtest)
+
+file_path <- "C:\\Users\\alons\\OneDrive - Cornell University\\Cornell University\\Spring 2024\\ORIE 5550\\ORIE5550_Homework3\\sunspot.txt"
+
+data <- read.table(file_path, header = FALSE, sep = "\t")
+
+sunspotsTS_original = ts(data, frequency = 1)
+```
+
+###  (a) Demean the series and produce a time plot and a correlogram of the time series.
+
+```{r q4a}
+
+# demean series
+sunspotsTS <- sunspotsTS_original - mean(sunspotsTS_original)
+par(mfrow = c(1,2))
+plot.ts(sunspotsTS, main = "Sunspots time series")
+acf(sunspotsTS, lag.max=20, ylim=c(-1, 1), main = "Autocorrelation function")
+```
+
+### (b) What order p is suggested by AIC and BIC information criteria, and the sample PACF? Include the outputs for these
+
+
+```{r q4b}
+auto.arima(sunspotsTS,max.p=5,max.q=0,ic="aic",allowmean = FALSE) # AIC
+auto.arima(sunspotsTS,max.p=5,max.q=0,ic="bic",allowmean = FALSE) # BIC
+pacf(sunspotsTS, lag.max=20, ylim=c(-1, 1), main = "Partial Autocorrelation function") # PACF
+```
+
+Based on the BIC and PACF, we choose an AR(2) model. Additionally, when fitting an AR(4), some coefficients were not reported as significant, thus, discarding the AIC suggestion.
+
+###  (c) Fit the AR(p) model to the time series for the order p from part (b); Check if all AR coefficients are significant. If any of the coefficients is not significant, choose a different lag order.
+
+```{r q4c}
+arma.model <- arima(sunspotsTS, order=c(2,0,0), include.mean = FALSE, method = "ML")
+summary(arma.model) # 
+coeftest(arma.model)# get p-values
+
+phi1_q4 <- arma.model$coef[1]
+phi2_q4 <- arma.model$coef[2]
+```
+
+###  (d) Produce the sample ACF and PACF of the model residuals; Are the model residuals consistent with the assumptions of normal distribution? Support your explanation with any method.
+
+```{r q4d}
+par(mfrow = c(1,2))
+acf(arma.model$residuals, lag.max=20, ylim=c(-1, 1), main = "Residuals Autocorrelation function")
+pacf(arma.model$residuals, lag.max=20, ylim=c(-1, 1), main = "Residuals Partial Autocorrelation function")
+
+# QQ plot
+qqnorm(arma.model$residuals, main = "QQ-plot of the regression residuals")
+qqline(arma.model$residuals, col = "red", lwd = 2)
+
+# Shapiro-Wilks test. Ho is normality
+shapiro.test(arma.model$residuals)
+
+#Box-Ljung test
+Box.test(arma.model$residuals, lag=20, type="Ljung-Box")
+```
+
+The QQ-Plots exhibit heavy tails, rejecting normality.
+
+For the Shapiro–Wilk test, the null hypothesis is that the sample comes from a normal distribution, and our results reject this $H_0$, again, rejecting normality.
+
+For Box-Ljung Test, the null hypothesis for a series of residuals exhibits no autocorrelation for a fixed number of lags. Our results do not reject the null hypothesis of no autocorrelation up to lag $20$.
+
+### (e) Write down the exact model that was fit to the original time series [Note: In this model, do not forget to include the removed mean].
+ 
+My result is an AR(2) model, when including the removed mean, we have the general form:
+
+\begin{center}
+$(X_t - \mu) = \phi_1(X_{t-1} - \mu) + \phi_2(X_{t-2} - \mu) + Z_t$ with $\{Z_t: t \in \mathbb{Z}\} \sim WN(0, \sigma_z^2)$
+\end{center}
+
+Substituting the values for $\mu$, $\hat{\phi_1}$ and $\hat{\phi_2}$ estimated above we have:
+
+\begin{center}
+$(X_t - `r mean(sunspotsTS_original)`) = `r round(phi1_q4,2)`(X_{t-1} - `r mean(sunspotsTS_original)`) + `r round(phi2_q4,2)`(X_{t-2} - `r mean(sunspotsTS_original)`) + Z_t$ with $\{Z_t: t \in \mathbb{Z}\} \sim WN(0, \sigma_z^2)$
+\end{center}
+
+### (f) Forecast the time series for 5 steps into the future and provide confidence intervals for the forecasts; Produce the forecast time plot with this information.
+
+```{r q4f}
+
+h = 5
+arma.forecast <- predict(arma.model, h)
+round(arma.forecast$pred, 3)
+round(arma.forecast$se, 3)
+
+lower <- arma.forecast$pred - (1.96 * arma.forecast$se) 
+upper <- arma.forecast$pred + (1.96 * arma.forecast$se) 
+
+forecasted_periods <- c(101:105)
+
+par(mfrow = c(1,1))
+plot(sunspotsTS, xlim=c(1,105), main = "Forecasts for the demeaned time series, horizon = 5")
+lines(forecasted_periods, arma.forecast$pred, lwd = 2)
+lines(forecasted_periods, lower, lty=2, lwd=2)
+lines(forecasted_periods, upper, lty=2, lwd=2)
+
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+"0","xx  <- c(time(jj), rev(time(jj)) )"
+"0","yy  <- c((Tsm+Ssm)-(p1+p2), rev((Tsm+Ssm)+(p1+p2)) )"
+"0","polygon(xx, yy, border=NA, col=gray(.5, alpha = .3))"
