@@ -22,7 +22,7 @@ Each homework folder contains:
 - Basic data transformations and visualization
 - Identifying trends and patterns in time series
 
-### **Homework 2: Seasonal Decomposition & Forecasting** *(Scripts missing, inferred from typical content)*
+### **Homework 2: Seasonal Decomposition & Forecasting**
 - Decomposing time series into trend, seasonality, and residuals
 - Seasonal adjustment techniques
 - Time series smoothing and moving averages
